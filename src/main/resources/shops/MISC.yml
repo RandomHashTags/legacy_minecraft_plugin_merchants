@@ -1,0 +1,34 @@
+# Made by RandomHashTags
+
+title: "&d&nMiscellaneous"
+size: 9
+
+items:
+  chest:
+    slot: 0
+    item: "chest:0"
+    prices: "20.00;2.50"
+  trapped chest:
+    slot: 1
+    item: "trapped_chest:0"
+    prices: "40.00;4.00"
+  ender chest:
+    slot: 2
+    prices: "1000.00;75.00"
+    item: "ender_chest:0"
+  brewing stand:
+    slot: 3
+    item: "brewing_stand_item:0"
+    prices: "50.00;8.00"
+  cauldron:
+    slot: 4
+    item: "cauldron_item:0"
+    prices: "500.00;80.00"
+  item frame:
+    slot: 5
+    item: "item_frame:0"
+    prices: "100.00;2.00"
+  golden apple:
+    slot: 6
+    item: "golden_apple:0"
+    prices: "2000.00;75.00"

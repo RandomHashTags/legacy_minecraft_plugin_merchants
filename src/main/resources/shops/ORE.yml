@@ -1,0 +1,66 @@
+# Made by RandomHashTags
+
+title: "&d&nMinerals"
+size: 18
+
+items:
+  cobblestone:
+    slot: 0
+    item: "cobblestone:0"
+    prices: "1.50;0.10"
+  stone:
+    slot: 1
+    item: "stone:0"
+    prices: "3.00;0.25"
+  stone 1:
+    slot: 2
+    item: "stone:1"
+    prices: "3.00;0.10"
+  stine 3:
+    slot: 3
+    item: "stone:3"
+    prices: "3.00;0.10"
+  stone 5:
+    slot: 4
+    item: "stone:5"
+    prices: "3.00;0.10"
+  iron ore:
+    slot: 5
+    item: "iron_ore:0"
+    prices: "125.00;7.50"
+  gold ore:
+    slot: 6
+    item: "gold_ore:0"
+    prices: "250.00;10.00"
+  coal:
+    slot: 7
+    item: "coal:0"
+    prices: "25.00;3.00"
+  ink sack:
+    slot: 8
+    item: "ink_sack:4"
+    prices: "25.00;3.00"
+  redstone:
+    slot: 9
+    item: "redstone:0"
+    prices: "30.00;3.00"
+  iron ingot:
+    slot: 10
+    item: "iron_ingot:0"
+    prices: "50.00;15.00"
+  gold ingot:
+    slot: 11
+    item: "gold_ingot:0"
+    prices: "100.00;20.00"
+  diamond:
+    slot: 12
+    item: "diamond:0"
+    prices: "200.00;75.00"
+  emerald:
+    slot: 13
+    item: "emerald:0"
+    prices: "128.00;25.00"
+  diamond pickaxe:
+    slot: 14
+    item: "diamond_pickaxe:0"
+    prices: "500.00;0.00"

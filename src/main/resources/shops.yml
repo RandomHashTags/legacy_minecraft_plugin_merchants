@@ -1,0 +1,228 @@
+# Made by RandomHashTags
+#
+purchase:
+  title: "&d&n{ITEM}"
+  size: 27
+  cancel:
+    item: "stained_glass_pane:14"
+    name: "&c&nCancel Purchase"
+    lore:
+    - "&7You will not purchase any items"
+    - "&7and will return to item selection."
+    - " "
+    - "&c&l(!)&r &cClick to cancel the purchase!"
+  #
+  one:
+    item: "stained_glass_pane:5"
+    name: "&d&nPurchase One"
+    lore:
+    - "&7Purchase a single item"
+    - " "
+    - "&dInformation:"
+    - " &d&l*&r &7Quantity: &d1"
+    - " &d&l*&r &7Cost: &d${COST}"
+    - " "
+    - "&d&l(!)&r &dClick to purchase this item!"
+  stack:
+    item: "stained_glass_pane:5"
+    name: "&d&nPurchase Stack"
+    lore:
+    - "&7Purchase a stack of items"
+    - " "
+    - "&dInformation:"
+    - " &d&l*&r &7Quantity: &d{QUANTITY}"
+    - " &d&l*&r &7Cost: &d${COST}"
+    - " "
+    - "&d&l(!)&r &dClick to purchase this item!"
+  inventory:
+    item: "stained_glass_pane:13"
+    name: "&d&nPurchase Inventory"
+    lore:
+    - "&7Purchase items to fill your inventory"
+    - " "
+    - "&dInformation:"
+    - " &d&l*&r &7Quantity: &d{QUANTITY}"
+    - " &d&l*&r &7Cost: &d${COST}"
+    - " "
+    - "&d&l(!)&r &dClick to purchase this item!"
+  #
+  cancel 1:
+    slot: 0
+    item: "cancel"
+  cancel 2:
+    slot: 1
+    item: "cancel"
+  cancel 3:
+    slot: 2
+    item: "cancel"
+  purchase one 1:
+    slot: 6
+    item: "purchaseone"
+  purchase stack 1:
+    slot: 7
+    item: "purchasestack"
+  purchase inventory 1:
+    slot: 8
+    item: "purchaseinventory"
+  cancel 4:
+    slot: 9
+    item: "cancel"
+  cancel 5:
+    slot: 10
+    item: "cancel"
+  cancel 6:
+    slot: 11
+    item: "cancel"
+  purchase item:
+    slot: 13
+    item: "{ITEM}"
+  purchase one 2:
+    slot: 15
+    item: "purchaseone"
+  purchase stack 2:
+    slot: 16
+    item: "purchasestack"
+  purchase inventory 2:
+    slot: 17
+    item: "purchaseinventory"
+  cancel 7:
+    slot: 18
+    item: "cancel"
+  cancel 8:
+    slot: 19
+    item: "cancel"
+  cancel 9:
+    slot: 20
+    item: "cancel"
+  purchase one 3:
+    slot: 24
+    item: "purchaseone"
+  purchase stack 3:
+    slot: 25
+    item: "purchasestack"
+  purchase inventory 3:
+    slot: 26
+    item: "purchaseinventory"
+#
+sell:
+  title: "&d&n{ITEM}"
+  size: 27
+  cancel:
+    item: "stained_glass_pane:14"
+    name: "&c&nCancel Sale"
+    lore:
+    - "&7You will not sell any items"
+    - "&7and will return to item selection."
+    - " "
+    - "&c&l(!)&r &cClick to cancel the sale!"
+  #
+  one:
+    item: "stained_glass_pane:5"
+    name: "&d&nSell One"
+    lore:
+    - "&7Sell a single item"
+    - " "
+    - "&dInformation:"
+    - " &d&l*&r &7Quantity: &d1"
+    - " &d&l*&r &7Cost: &d${COST}"
+    - " "
+    - "&d&l(!)&r &dClick to sell this item!"
+  stack:
+    item: "stained_glass_pane:5"
+    name: "&d&nSell Stack"
+    lore:
+    - "&7Sell a stack of items"
+    - " "
+    - "&dInformation:"
+    - " &d&l*&r &7Quantity: &d{QUANTITY}"
+    - " &d&l*&r &7Cost: &d${COST}"
+    - " "
+    - "&d&l(!)&r &dClick to sell this item!"
+  inventory:
+    item: "stained_glass_pane:13"
+    name: "&d&nSell Inventory"
+    lore:
+    - "&7Sell all of the item in your inventory"
+    - " "
+    - "&dInformation:"
+    - " &d&l*&r &7Quantity: &d{QUANTITY}"
+    - " &d&l*&r &7Cost: &d${COST}"
+    - " "
+    - "&d&l(!)&r &dClick to sell this item!"
+  #
+  cancel 1:
+    slot: 0
+    item: "cancel"
+  cancel 2:
+    slot: 1
+    item: "cancel"
+  cancel 3:
+    slot: 2
+    item: "cancel"
+  sell one 1:
+    slot: 6
+    item: "sellone"
+  sell stack 1:
+    slot: 7
+    item: "sellstack"
+  sell inventory 1:
+    slot: 8
+    item: "sellinventory"
+  cancel 4:
+    slot: 9
+    item: "cancel"
+  cancel 5:
+    slot: 10
+    item: "cancel"
+  cnacel 6:
+    slot: 11
+    item: "cancel"
+  sell item:
+    slot: 13
+    item: "{ITEM}"
+  sell one 2:
+    slot: 15
+    item: "sellone"
+  sell stack 2:
+    slot: 16
+    item: "sellstack"
+  sell inventory 2:
+    slot: 17
+    item: "sellinventory"
+  cancel 7:
+    slot: 18
+    item: "cancel"
+  cancel 8:
+    slot: 19
+    item: "cancel"
+  cancel 9:
+    slot: 20
+    item: "cancel"
+  sell one 3:
+    slot: 24
+    item: "sellone"
+  sell stack 3:
+    slot: 25
+    item: "sellstack"
+  sell inventory 3:
+    slot: 26
+    item: "sellinventory"
+#
+lores:
+  not buyable:
+  - " &d&l*&r &7Buy Price(ea): &cNot Buyable"
+  not sellable:
+  - " &d&l*&r &7Sell Price(ea): &cNot Sellable"
+  shop lore:
+  - " "
+  - "&dUsage:"
+  - " &d&l*&r &7Left-click to buy items"
+  - " &d&l*&r &7Right-click to sell items"
+  - " "
+  - "&dInformation:"
+  - " &d&l*&r &7Buy Price (ea): &d${BUY}"
+  - " &d&l*&r &7Sell Price (ea): &d${SELL}"
+#
+close inventory upon:
+  successful purchase: true
+  successful sell: true

@@ -1,0 +1,10 @@
+# Made by RandomHashTags
+
+title: "&d&nHoppers"
+size: 9
+
+items:
+  hopper:
+    slot: 0
+    item: "hopper:0"
+    prices: "20000.00;0.00"

@@ -1,0 +1,162 @@
+# Made by RandomHashTags
+
+title: "&d&nMob Drops"
+size: 45
+
+items:
+  pork:
+    slot: 0
+    item: "pork:0"
+    prices: "10.00;1.00"
+  raw fish:
+    slot: 1
+    item: "raw_fish:0"
+    prices: "20.00;2.00"
+  rabbit:
+    slot: 2
+    item: "rabbit:0"
+    prices: "10.00;1.50"
+  rabbit hide:
+    slot: 3
+    item: "rabbit_hide:0"
+    prices: "25.00;0.25"
+  mutton:
+    slot: 4
+    item: "mutton:0"
+    prices: "20.00;1.50"
+  wool:
+    slot: 5
+    item: "wool:0"
+    prices: "10.00;2.00"
+  cooked beef:
+    slot: 6
+    item: "cooked_beef:0"
+    prices: "40.00;2.00"
+  leather:
+    slot: 7
+    item: "leather:0"
+    prices: "100.00;2.00"
+  red mushroom:
+    slot: 8
+    item: "red_mushroom:0"
+    prices: "25.00;2.50"
+  raw chicken:
+    slot: 9
+    item: "raw_chicken:0"
+    prices: "20.00;2.00"
+  feather:
+    slot: 10
+    item: "feather:0"
+    prices: "10.00;2.00"
+  stone:
+    slot: 11
+    item: "stone:0"
+    prices: "3.00;0.25"
+  slime ball:
+    slot: 12
+    item: "slime_ball:0"
+    prices: "20.00;2.50"
+  ender stone:
+    slot: 13
+    item: "ender_stone:0"
+    prices: "12.50;2.50"
+  string:
+    slot: 14
+    item: "string:0"
+    prices: "2.00;0.50"
+  fermented spider eye:
+    slot: 15
+    item: "fermented_spider_eye:0"
+    prices: "75.00;5.00"
+  ink sack:
+    slot: 16
+    item: "ink_sack:0"
+    prices: "20.00;2.00"
+  rotten flesh:
+    slot: 17
+    item: "rotten_flesh:0"
+    prices: "10.00;1.50"
+  potato:
+    slot: 18
+    item: "potato_item:0"
+    prices: "100.00;3.00"
+  bone:
+    slot: 19
+    item: "bone:0"
+    prices: "4.00;2.00"
+  arrow:
+    slot: 20
+    item: "arrow:0"
+    prices: "4.00;2.00"
+  prismarine shard:
+    slot: 21
+    item: "prismarine_shard:0"
+    prices: "5.00;1.50"
+  prismarine crystals:
+    slot: 22
+    item: "prismarine_crystals:0"
+    prices: "10.00;2.50"
+  magma cream:
+    slot: 23
+    item: "magma_cream:0"
+    prices: "65.00;4.00"
+  blaze powder:
+    slot: 24
+    item: "blaze_powder:0"
+    prices: "20.00;1.00"
+  paper:
+    slot: 25
+    item: "paper:0"
+    prices: "10.00;2.00"
+  emerald:
+    slot: 26
+    item: "emerald:0"
+    prices: "128.00;25.00"
+  fireball:
+    slot: 27
+    item: "fireball:0"
+    prices: "50.00;2.00"
+  ghast tear:
+    slot: 28
+    item: "ghast_tear:0"
+    prices: "60.00;12.00"
+  gold nugget:
+    slot: 29
+    item: "gold_nugget:0"
+    prices: "11.10;2.00"
+  gold ingot:
+    slot: 30
+    item: "gold_ingot:0"
+    prices: "100.00;20.00"
+  blaze rod:
+    slot: 31
+    item: "blaze_rod:0"
+    prices: "40.00;4.00"
+  glowstone dust:
+    slot: 32
+    item: "glowstone_dust:0"
+    prices: "4.00;2.00"
+  coal:
+    slot: 33
+    item: "coal:0"
+    prices: "25.00;3.00"
+  ender pearl:
+    slot: 34
+    item: "ender_pearl:0"
+    prices: "50.00;6.00"
+  sulphur:
+    slot: 35
+    item: "sulphur:0"
+    prices: "20.00;2.00"
+  iron ingot:
+    slot: 36
+    item: "iron_ingot:0"
+    prices: "50.00;15.00"
+  carrot:
+    slot: 37
+    item: "carrot_item:0"
+    prices: "25.00;2.00"
+  snow ball:
+    slot: 38
+    item: "snow_ball:0"
+    prices: "4.00;1.50"

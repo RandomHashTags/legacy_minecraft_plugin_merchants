@@ -1,0 +1,101 @@
+# Made by RandomHashTags
+
+title: "&d&nPotions"
+size: 18
+
+items:
+  custom 1:
+    slot: 0
+    potion:
+    - "Effects{increase_damage:1:480}"
+    prices: "200.00;0.00"
+  custom 2:
+    slot: 1
+    potion:
+    - "Effects{increase_damage:2:90}"
+    prices: "300.00;0.00"
+  custom 3:
+    slot: 2
+    potion:
+    - "Effects{speed:1:480}"
+    prices: "150.00;0.00"
+  custom 4:
+    slot: 3
+    potion:
+    - "Effects{speed:2:90}"
+    prices: "200.00;0.00"
+  custom 5:
+    slot: 4
+    potion:
+    - "Effects{regeneration:1:120}"
+    prices: "225.00;0.00"
+  custom 6:
+    slot: 5
+    potion:
+    - "Effects{regeneration:2:22}"
+    prices: "300.00;0.00"
+  custom 7:
+    slot: 6
+    potion:
+    - "Effects{heal:2:1}"
+    prices: "50.00;0.00"
+  custom 8:
+    slot: 7
+    splash: true
+    potion:
+    - "Effects{heal:2:1}"
+    prices: "75.00;0.00"
+  custom 9:
+    slot: 8
+    splash: true
+    potion:
+    - "Effects{poison:1:130}"
+    prices: "250.00;0.00"
+  custom 10:
+    slot: 9
+    splash: true
+    potion:
+    - "Effects{poison:2:16}"
+    prices: "300.00;0.00"
+  custom 11:
+    slot: 10
+    splash: true
+    potion:
+    - "Effects{slow:1:180}"
+    prices: "250.00;0.00"
+  custom 12:
+    slot: 11
+    splash: true
+    potion:
+    - "Effects{weakness:1:180}"
+    prices: "250.00;0.00"
+  custom 13:
+    slot: 12
+    potion:
+    - "Effects{jump:1:480}"
+    prices: "200.00;0.00"
+  custom 14:
+    slot: 13
+    potion:
+    - "Effects{jump:2:90}"
+    prices: "250.00;0.00"
+  custom 15:
+    slot: 14
+    potion:
+    - "Effects{fire_resistance:1:480}"
+    prices: "200.00;0.00"
+  custom 16:
+    slot: 15
+    potion:
+    - "Effects{water_breathing:1:480}"
+    prices: "200.00;0.00"
+  custom 17:
+    slot: 16
+    potion:
+    - "Effects{night_vision:1:480}"
+    prices: "100.00;0.00"
+  custom 18:
+    slot: 17
+    potion:
+    - "Effects{invisibility:1:480}"
+    prices: "300.00;0.00"

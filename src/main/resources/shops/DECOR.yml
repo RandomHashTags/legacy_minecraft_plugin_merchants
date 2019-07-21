@@ -1,0 +1,202 @@
+# Made by RandomHashTags
+
+title: "&d&nDecoration"
+size: 54
+
+items:
+  dirt:
+    slot: 0
+    item: "dirt:0"
+    prices: "1.50;0.40"
+  dirt 1:
+    slot: 1
+    item: "dirt:1"
+    prices: "1.50;0.40"
+  grass:
+    slot: 2
+    item: "grass:0"
+    prices: "10.00;1.50"
+  dirt 2:
+    slot: 3
+    item: "dirt:2"
+    prices: "10.00;1.50"
+  mycelium:
+    slot: 4
+    item: "mycel:0"
+    prices: "20.00;2.50"
+  vine:
+    slot: 5
+    item: "vine:0"
+    prices: "20.00;1.00"
+  water lily:
+    slot: 6
+    item: "water_lily:0"
+    prices: "20.00;1.00"
+  cobblestone:
+    slot: 7
+    item: "cobblestone:0"
+    prices: "1.50;0.10"
+  stone:
+    slot: 8
+    item: "stone:0"
+    prices: "3.00;0.25"
+  mossy cobblestone:
+    slot: 9
+    item: "mossy_cobblestone:0"
+    prices: "20.00;4.00"
+  stone 1:
+    slot: 10
+    item: "stone:1"
+    prices: "3.00;0.10"
+  stone 3:
+    slot: 11
+    item: "stone:3"
+    prices: "3.00;0.10"
+  stone 5:
+    slot: 12
+    item: "stone:5"
+    prices: "3.00;0.10"
+  smooth brick:
+    slot: 13
+    item: "smooth_brick:0"
+    prices: "5.00;1.00"
+  smooth brick 3:
+    slot: 14
+    item: "smooth_brick:3"
+    prices: "5.00;1.00"
+  smooth brick 1:
+    slot: 15
+    item: "smooth_brick:1"
+    prices: "7.50;1.00"
+  smooth brick 2:
+    slot: 16
+    item: "smooth_brick:2"
+    prices: "7.50;1.00"
+  sand:
+    slot: 17
+    item: "sand:0"
+    prices: "2.00;1.00"
+  red sand:
+    slot: 18
+    item: "sand:1"
+    prices: "2.00;1.00"
+  gravel:
+    slot: 19
+    item: "gravel:0"
+    prices: "2.00;1.00"
+  sandstone:
+    slot: 20
+    item: "sandstone:0"
+    prices: "4.00;0.40"
+  red sandstone:
+    slot: 21
+    item: "red_sandstone:0"
+    prices: "4.00;0.40"
+  glass:
+    slot: 22
+    item: "glass:0"
+    prices: "10.00;1.50"
+  clay:
+    slot: 23
+    item: "clay:0"
+    prices: "20.00;2.00"
+  hard clay:
+    slot: 24
+    item: "hard_clay:0"
+    prices: "20.00;4.00"
+  brick:
+    slot: 25
+    item: "brick:0"
+    prices: "20.00;2.00"
+  flower pot:
+    slot: 26
+    item: "flower_pot_item:0"
+    prices: "50.00;2.47"
+  wool:
+    slot: 27
+    item: "wool:0"
+    prices: "10.00;2.00"
+  bookshelf:
+    slot: 28
+    item: "bookshelf:0"
+    prices: "40.00;6.00"
+  prismarine:
+    slot: 29
+    item: "prismarine:0"
+    prices: "10.00;4.00"
+  prismarine 1:
+    slot: 30
+    item: "prismarine:1"
+    prices: "20.00;9.00"
+  prismarine 2:
+    slot: 31
+    item: "prismarine:2"
+    prices: "20.00;8.00"
+  sea lantern:
+    slot: 32
+    item: "sea_lantern:0"
+    prices: "10.00;4.00"
+  netherrack:
+    slot: 33
+    item: "netherrack:0"
+    prices: "4.00;0.25"
+  nether brick:
+    slot: 34
+    item: "nether_brick:0"
+    prices: "6.00;2.00"
+  soul sand:
+    slot: 35
+    item: "soul_sand:0"
+    prices: "10.00;0.75"
+  quartz block:
+    slot: 36
+    item: "quartz_block:0"
+    prices: "20.00;10.00"
+  glowstone:
+    slot: 37
+    item: "glowstone:0"
+    prices: "12.50;4.00"
+  redstone lamp off:
+    slot: 38
+    item: "redstone_lamp_off:0"
+    prices: "200.00;10.00"
+  ender stone:
+    slot: 39
+    item: "ender_stone:0"
+    prices: "12.50;2.50"
+  ice:
+    slot: 40
+    item: "ice:0"
+    prices: "5.00;1.00"
+  packed ice:
+    slot: 41
+    item: "packed_ice:0"
+    prices: "10.00;2.00"
+  snow:
+    slot: 42
+    item: "snow:0"
+    prices: "4.00;1.50"
+  snow block:
+    slot: 43
+    item: "snow_block:0"
+    prices: "16.00;6.00"
+  slime block:
+    slot: 44
+    item: "slime_block:0"
+    prices: "180.00;22.50"
+  hay block:
+    slot: 45
+    item: "hay_block:0"
+    prices: "90.00;18.00"
+  step:
+    slot: 46
+    item: "step:0"
+    prices: "0.75;0.25"
+  iron fence:
+    slot: 47
+    item: "iron_fence:0"
+    prices: "20.00;5.00"
+  long grass 2:
+    slot: 48
+    item: "long_grass:2"
+    prices: "5.00;0.10"

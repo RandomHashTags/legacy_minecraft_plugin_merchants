@@ -1,0 +1,85 @@
+# Made by RandomHashTags
+select item:
+  title: "&c&nSelect an Item"
+  size: 36
+  added lore:
+    - " "
+    - "&d&l(!)&r &dClick to &nEnchant&r &dthis item!"
+  #
+#
+enchant merchant:
+  title: "Enchant Merchant"
+  size: 18
+  enchant slots: "0-8"
+  #
+  picking enchant:
+    name: "&c&n{ENCHANT} Enchantment"
+    lore:
+      -  " "
+      - "&c&l*&r &7Current Level: &c{CURRENT}"
+      - "&c&l*&r &7Maximum Level: &c{MAX}"
+  picking level:
+    name: "&c&n{ENCHANT}"
+    lore:
+      - "&c&l*&r &7Enchant Cost: &c{COST}"
+      - "&c&l*&r &7Able to Enchant: {STATUS}"
+      - " "
+      - "&c&l(!)&r &cClick to buy &n{ENCHANT}&r&c!"
+  #
+  background:
+    item: "black_stained_glass_pane"
+    name: " "
+  no enchant:
+    item: "red_stained_glass_pane"
+    name: " "
+  #
+  red 1:
+    slot: 12
+    item: "red_stained_glass_pane"
+    name: " "
+  item:
+    slot: 13
+    item: "{ITEM}"
+  red 2:
+    slot: 14
+    item: "red_stained_glass_pane"
+    name: " "
+#
+max enchant levels:
+  #
+  BINDING_CURSE: 1
+  VANISHING_CURSE: 1
+  #
+  AQUA_AFFINITY: 3
+  DEPTH_STRIDER: 3
+  FROST_WALKER: 3
+  RESPIRATION: 3
+  THORNS: 2
+  PROTECTION: 4
+  BLAST_PROTECTION: 4
+  FEATHER_FALLING: 3
+  FIRE_PROTECTION: 4
+  PROJECTILE_PROTECTION: 4
+  #
+  EFFICIENCY: 5
+  FORTUNE: 3
+  SILK_TOUCH: 1
+  UNBREAKING: 3
+  #
+  BANE_OF_ARTHROPODS: 5
+  FIRE_ASPECT: 2
+  KNOCKBACK: 2
+  LOOTING: 3
+  SHARPNESS: 5
+  SMITE: 5
+  #
+  MENDING: 1
+  #
+  LUCK: 3
+  LURE: 3
+  #
+  FLAME: 1
+  INFINITY: 1
+  POWER: 5
+  PUNCH: 5
+#

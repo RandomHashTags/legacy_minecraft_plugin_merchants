@@ -1,0 +1,142 @@
+# Made by RandomHashTags
+
+title: "&d&nColored Blocks"
+size: 36
+
+items:
+  glass:
+    slot: 0
+    item: "glass:0"
+    prices: "10.00;1.50"
+  hard clay:
+    slot: 1
+    item: "hard_clay:0"
+    prices: "20.00;4.00"
+  wool:
+    slot: 2
+    item: "wool:0"
+    prices: "10.00;2.00"
+  ink sack 0:
+    slot: 3
+    item: "ink_sack:0"
+    prices: "20.00;2.00"
+  ink sack 1:
+    slot: 4
+    item: "ink_sack:1"
+    prices: "1.00;0.10"
+  ink sack 2:
+    slot: 5
+    item: "ink_sack:2"
+    prices: "10.00;1.00"
+  ink sack 3:
+    slot: 6
+    item: "ink_sack:3"
+    prices: "20.00;2.50"
+  ink sack 4:
+    slot: 7
+    item: "ink_sack:4"
+    prices: "25.00;3.00"
+  ink sack 5:
+    slot: 8
+    item: "ink_sack:5"
+    prices: "15.00;1.00"
+  ink sack 6:
+    slot: 9
+    item: "ink_sack:6"
+    prices: "15.00;1.00"
+  ink sack 7:
+    slot: 10
+    item: "ink_sack:7"
+    prices: "12.50;1.00"
+  ink sack 8:
+    slot: 11
+    item: "ink_sack:8"
+    prices: "15.00;1.00"
+  ink sack 9:
+    slot: 12
+    item: "ink_sack:9"
+    prices: "5.00;1.00"
+  ink sack 10:
+    slot: 13
+    item: "ink_sack:10"
+    prices: "5.00;1.00"
+  ink sack 11:
+    slot: 14
+    item: "ink_sack:11"
+    prices: "1.00;0.10"
+  ink sack 12:
+    slot: 15
+    item: "ink_sack:12"
+    prices: "12.50;1.00"
+  ink sack 13:
+    slot: 16
+    item: "ink_sack:13"
+    prices: "5.00;1.00"
+  ink sack 14:
+    slot: 17
+    item: "ink_sack:14"
+    prices: "2.00;0.20"
+  ink sack 15:
+    slot: 18
+    item: "ink_sack:15"
+    prices: "2.00;0.10"
+  dead bush:
+    slot: 19
+    item: "dead_bush:0"
+    prices: "5.00;0.10"
+  yellow flower:
+    slot: 20
+    item: "yellow_flower:0"
+    prices: "5.00;0.10"
+  red rose 0:
+    slot: 21
+    item: "red_rose:0"
+    prices: "5.00;0.10"
+  red rose 1:
+    slot: 22
+    item: "red_rose:1"
+    prices: "5.00;0.10"
+  red rose 2:
+    slot: 23
+    item: "red_rose:2"
+    prices: "5.00;0.10"
+  red rose 3:
+    slot: 24
+    item: "red_rose:3"
+    prices: "5.00;0.10"
+  red rose 4:
+    slot: 25
+    item: "red_rose:4"
+    prices: "5.00;0.10"
+  red rose 5:
+    slot: 26
+    item: "red_rose:5"
+    prices: "5.00;0.10"
+  red rose 6:
+    slot: 27
+    item: "red_rose:6"
+    prices: "5.00;0.10"
+  red rose 7:
+    slot: 28
+    item: "red_rose:7"
+    prices: "5.00;0.10"
+  red rose 8:
+    slot: 29
+    item: "red_rose:8"
+    prices: "5.00;0.10"
+  double plant 0:
+    slot: 30
+    item: "double_plant:0"
+    prices: "5.00;0.10"
+  double plant 1:
+    slot: 31
+    item: "double_plant:1"
+    prices: "5.00;0.10"
+  double plant 4:
+    slot: 32
+    item: "double_plant:4"
+    prices: "5.00;0.10"
+  double plant 5:
+    slot: 33
+    item: "double_plant:5"
+    prices: "5.00;0.10"

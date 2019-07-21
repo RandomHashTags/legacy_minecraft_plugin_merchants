@@ -1,0 +1,114 @@
+# Made by RandomHashTags
+
+title: "&d&nRaiding Materials"
+size: 27
+
+items:
+  tnt:
+    slot: 0
+    item: "tnt:0"
+    prices: "78.125;16.00"
+  dispenser:
+    slot: 1
+    item: "dispenser:0"
+    prices: "200.00;20.00"
+  redstone:
+    slot: 2
+    item: "redstone:0"
+    prices: "20.00;3.00"
+  redstone torch on:
+    slot: 3
+    item: "redstone_torch_on:0"
+    prices: "25.00;3.00"
+  lever:
+    slot: 4
+    item: "lever:0"
+    prices: "2.00;0.10"
+  stone button:
+    slot: 5
+    item: "stone_button:0"
+    prices: "3.00;0.10"
+  redstone repeater:
+    slot: 6
+    item: "diode:0"
+    prices: "25.00;8.00"
+  redstone comparator:
+    slot: 7
+    item: "redstone_comparator:0"
+    prices: "250.00;15.00"
+  piston:
+    slot: 8
+    item: "piston_base:0"
+    prices: "100.00;10.00"
+  sticky piston:
+    slot: 9
+    item: "piston_sticky_base:0"
+    prices: "150.00;13.00"
+  cobblestone:
+    slot: 10
+    item: "cobblestone:0"
+    prices: "1.50;0.10"
+  stone:
+    slot: 11
+    item: "stone:0"
+    prices: "3.00;0.25"
+  step:
+    slot: 12
+    item: "step:0"
+    prices: "0.75;0.25"
+  glass:
+    slot: 13
+    item: "glass:0"
+    prices: "10.00;2.00"
+  ladder:
+    slot: 14
+    item: "ladder:0"
+    prices: "6.25;0.00"
+  sand:
+    slot: 15
+    item: "sand:0"
+    prices: "2.00;1.00"
+  red sand:
+    slot: 16
+    item: "sand:1"
+    prices: "2.00;1.00"
+  gravel:
+    slot: 17
+    item: "gravel:0"
+    prices: "2.00;1.00"
+  web:
+    slot: 18
+    item: "web:0"
+    prices: "468.75;0.00"
+  water bucket:
+    slot: 19
+    item: "water_bucket:0"
+    prices: "100.00;0.00"
+  lava bucket:
+    slot: 20
+    item: "lava_bucket:0"
+    prices: "150.00;0.00"
+  netherrack:
+    slot: 21
+    item: "netherrack:0"
+    prices: "4.00;0.25"
+  obsidian:
+    slot: 22
+    item: "obsidian:0"
+    prices: "100.00;0.00"
+  sponge:
+    slot: 23
+    item: "sponge:0"
+    prices: "250.00;25.00"
+  glowstone:
+    slot: 24
+    item: "glowstone:0"
+    prices: "12.50;4.00"
+  monster egg:
+    slot: 25
+    item: "monster_egg:50"
+    prices: "10000.00;0.00"
+  flint and steel:
+    slot: 26
+    item: "flint_and_steel:0"
+    prices: "100.00;0.00"

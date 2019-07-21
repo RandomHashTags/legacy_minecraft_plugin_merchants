@@ -1,0 +1,66 @@
+# Made by RandomHashTags
+
+title: "&d&nElixir Merchant"
+size: 9
+
+items:
+  background 1:
+    slot: 0
+    item: "stained_glass_pane:2"
+    name: " "
+  background 2:
+    slot: 1
+    item: "stained_glass_pane:5"
+    name: " "
+  brewing materials:
+    slot: 2
+    opens: BREWING
+    item: "brewing_stand_item:0"
+    name: "&d&nBrewing Materials"
+    lore:
+    - "&7\"All materials to brew Potions\""
+    - " "
+    - "&dInformation:"
+    - " &d&l*&r &7Total Items: &d14"
+    - " "
+    - "&d&l(!)&r &dClick to view this Category!"
+  background 3:
+    slot: 3
+    item: "stained_glass_pane:5"
+    name: " "
+  potions:
+    slot: 4
+    opens: POTIONS
+    item: "potion:0"
+    name: "&d&nPotions"
+    lore:
+    - "&7\"Regular, Amplified, Extended, & Splash Potions\""
+    - " "
+    - "&dInformation:"
+    - " &d&l*&r &7Total Items: &d18"
+    - " "
+    - "&d&l(!)&r &dClick to view this Category!"
+  background 4:
+    slot: 5
+    item: "stained_glass_pane:5"
+    name: " "
+  elixirs:
+    slot: 6
+    opens: ELIXIRS
+    item: "potion:0"
+    name: "&d&nElixirs"
+    lore:
+    - "&7\"Custom Potions with New/Enhanced Effects\""
+    - " "
+    - "&dInformation:"
+    - " &d&l*&r &7Total Items: &d10"
+    - " "
+    - "&d&l(!)&r Click to view this Category!"
+  background 5:
+    slot: 7
+    item: "stained_glass_pane:5"
+    name: " "
+  background 6:
+    slot: 8
+    item: "stained_glass_pane:2"
+    name: " "

@@ -1,0 +1,91 @@
+# Made by RandomHashTags
+
+title: "&d&nElixirs"
+size: 18
+
+items:
+  fused:
+    slot: 0
+    name: "&dFused Elixir"
+    potion:
+    - "Effects{increase_damage:2:90;speed:2:90}"
+    - "&7Used by warriors to destroy their"
+    - "&7opponents in intense battles!"
+    prices: "1750.00;0.00"
+  aquatic:
+    slot: 1
+    name: "&3Aquatic Elixir"
+    potion:
+    - "Effects{water_breathing:1:1800}"
+    - "&7Explore the sunken ruins with ease"
+    - "&7while using this bizzare concoction."
+    prices: "2000.00;0.00"
+  magmatic:
+    slot: 2
+    name: "&4Magmatic Elixir"
+    potion:
+    - "Effects{fire_resistance:1:1800}"
+    - "&7Created using items found deep within"
+    - "&7the nether, the user of this elixir"
+    - "&7becomes immune to extreme temperatures!"
+    prices: "3250.00;0.00"
+  haste:
+    slot: 3
+    name: "&6Haste Elixir"
+    potion:
+    - "Effects{fast_digging:2:480}"
+    - "&7Forge caverns at insane rates"
+    - "&7while using its desired effect!"
+    prices: "5000.00;0.00"
+  escapist:
+    slot: 4
+    name: "&7Escapist Elixir"
+    potion:
+    - "Effects{speed:3:10;invisibility:1:60;weakness:2:5}"
+    - "&7Escape Overpowered foes with a"
+    - "&7quick sip of this elixir!"
+    prices: "3000.00;0.00"
+  marathon:
+    slot: 5
+    name: "&bMarathon Elixir"
+    potion:
+    - "Effects{speed:1:960}"
+    - "&7Once consumed, this elixir enhances the"
+    - "&7user's speed to travel long distances!"
+    prices: "4000.00;0.00"
+  restoration:
+    slot: 6
+    name: "&cRestoration Elixir"
+    splash: true
+    potion:
+    - "Effects{heal:2:1;regeneration:3:15}"
+    - "&7Avoid near death by splashing"
+    - "&7this specially brewed elixir!"
+    prices: "5000.00;0.00"
+  rotten:
+    slot: 7
+    name: "&2Rotten Elixir"
+    splash: true
+    potion:
+    - "Effects{confusion:1:15;slow:1:45}"
+    - "&7This once useful elixir wasted overtime"
+    - "&7making it extremely toxic."
+    prices: "2500.00;0.00"
+  fermented:
+    slot: 8
+    name: "&5Fermented Elixir"
+    splash: true
+    potion:
+    - "Effects{poison:1:90;slow:2:45}"
+    - "&7Cripple your foes by throwing this"
+    - "&7elixir brewed from spider eyes."
+    prices: "3250.00;0.00"
+  famine:
+    slot: 9
+    name: "&9Famine Elixir"
+    splash: true
+    potion:
+    - "Effects{hunger:1:30;weakness:1:45}"
+    - "&7A mixture of diseases which can"
+    - "&7weaken the strongest of foes!"
+    prices: "2750.00;0.00"

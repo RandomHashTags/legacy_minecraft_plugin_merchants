@@ -1,0 +1,70 @@
+# Made by RandomHashTags
+
+title: "&d&nBase Building"
+size: 18
+
+items:
+  cobblestone:
+    slot: 0
+    item: "cobblestone:0"
+    prices: "1.50;0.10"
+  stone:
+    slot: 1
+    item: "stone:0"
+    prices: "3.00;0.25"
+  ender stone:
+    slot: 2
+    item: "ender_stone:0"
+    prices: "12.50;2.50"
+  netherrack:
+    slot: 3
+    item: "netherrack:0"
+    prices: "4.00;0.25"
+  sand:
+    slot: 4
+    item: "sand:0"
+    prices: "2.00;1.00"
+  red sand:
+    slot: 5
+    item: "sand:1"
+    prices: "2.00;1.00"
+  gravel:
+    slot: 6
+    item: "gravel:0"
+    prices: "2.00;1.00"
+  obsidian:
+    slot: 7
+    item: "obsidian:0"
+    prices: "100.00;0.00"
+  sponge:
+    slot: 8
+    item: "sponge:0"
+    prices: "250.00;25.00"
+  ice:
+    slot: 9
+    item: "ice:0"
+    prices: "5.00;1.00"
+  bucket:
+    slot: 10
+    item: "bucket:0"
+    prices: "50.00;0.00"
+  water bucket:
+    slot: 11
+    item: "water_bucket:0"
+    prices: "100.00;0.00"
+  lava bucket:
+    slot: 12
+    item: "lava_bucket:0"
+    prices: "150.00;0.00"
+  diamond pickaxe:
+    slot: 13
+    item: "diamond_pickaxe:0"
+    prices: "500.00;0.00"
+  diamond axe:
+    slot: 14
+    item: "diamond_axe:0"
+    prices: "400.00;0.00"
+  diamond spade:
+    slot: 15
+    item: "diamond_spade:0"
+    prices: "150.00;0.00"

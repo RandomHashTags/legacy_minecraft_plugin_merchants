@@ -1,0 +1,125 @@
+# Made by RandomHashTags
+#
+messages:
+  purchase success:
+  - "&aBought {AMOUNT}x {ITEM} for ${COST}"
+  purchase success commands:
+  - "&aBought {AMOUNT}x executed command(s) for ${COST}"
+  purchase incomplete:
+  - "&cYou don't have enough money!"
+  purchase cancelled:
+  - "&cYou've cancelled purchasing that item."
+  not buyable:
+  - "&cYou cannot purchase that item!"
+  sell success:
+  - "&aSold {AMOUNT}x {ITEM} for ${COST}"
+  sell incomplete:
+  - "&cYou don't have enough of that item!"
+  sell cancelled:
+  - "&cYou've cancelled selling that item."
+  not sellable:
+  - "&cThat item is not sellable!"
+  #
+  close due to reload:
+  - "&eYou've exited this inventory due to the server reloading."
+  #
+  sell usage:
+  - "&cUsage: &7/sell [chest/hand/inv]"
+  must be looking at chest:
+  - "&cYou must be looking at a chest to use this command!"
+  need to be holding item:
+  - "&cYou must be holding an item to sell!"
+  cannot sell item to server:
+  - "&cYou cannot sell this item to the server!"
+  #
+  no permission:
+  - "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is an error."
+#
+commands:
+  # <command without the slash>
+  # true = enable | false = disabled
+  base:
+    cmd: true
+    npc: true
+    opens: BASE
+    command permission: "Merchants.base.cmd"
+    npc permission: "Merchants.base.npc"
+  brewing:
+    cmd: true
+    npc: false
+    opens: BREWING
+    command permission: "Merchants.brewing.cmd"
+    npc permission: "Merchants.brewing.npc"
+  color:
+    cmd: true
+    npc: true
+    opens: COLOR
+    command permission: "Merchants.color.cmd"
+    npc permission: "Merchants.color.npc"
+  decor:
+    cmd: true
+    npc: true
+    opens: DECOR
+    command permission: "Merchants.decor.cmd"
+    npc permission: "Merchants.decor.npc"
+  elixir:
+    cmd: true
+    npc: true
+    opens: ELIXIR
+    command permission: "Merchants.elixir.cmd"
+    npc permission: "Merchants.elixir.npc"
+  elixirs:
+    cmd: true
+    npc: true
+    opens: ELIXIRS
+    command permission: "Merchants.elixirs.cmd"
+    npc permission: "Merchants.elixirs.npc"
+  farming:
+    cmd: true
+    npc: true
+    opens: FARMING
+    command permission: "Merchants.farming.cmd"
+    npc permission: "Merchants.farming.npc"
+  fish:
+    cmd: true
+    npc: true
+    opens: FISH
+    command permission: "Merchants.fish.cmd"
+    npc permission: "Merchants.fish.npc"
+  hopper:
+    cmd: true
+    npc: true
+    opens: HOPPER
+    command permission: "Merchants.hopper.cmd"
+    npc permission: "Merchants.hopper.npc"
+  misc:
+    cmd: true
+    npc: true
+    opens: MISC
+    command permission: "Merchants.misc.cmd"
+    npc permission: "Merchants.misc.npc"
+  mob:
+    cmd: true
+    npc: true
+    opens: MOB
+    command permission: "Merchants.mob.cmd"
+    npc permission: "Merchants.mob.npc"
+  ore:
+    cmd: true
+    npc: true
+    opens: ORE
+    command permission: "Merchants.ore.cmd"
+    npc permission: "Merchants.ore.npc"
+  potions:
+    cmd: true
+    npc: true
+    opens: POTIONS
+    command permission: "Merchants.potions.cmd"
+    npc permission: "Merchants.potions.npc"
+  raid:
+    cmd: true
+    npc: true
+    opens: RAID
+    command permission: "Merchants.raid.cmd"
+    npc permission: "Merchants.raid.npc"
+#

@@ -1,0 +1,166 @@
+# Made by RandomHashTags
+
+title: "&d&nFarming"
+size: 45
+
+items:
+  melon:
+    slot: 0
+    item: "melon:0"
+    prices: "25.00;3.50"
+  pumpkin:
+    slot: 1
+    item: "pumpkin:0"
+    prices: "100.00;5.00"
+  sugar cane:
+    slot: 2
+    item: "sugar_cane:0"
+    prices: "20.00;3.125"
+  cactus:
+    slot: 3
+    item: "cactus:0"
+    prices: "100.00;1.50"
+  nether stalk:
+    slot: 4
+    item: "nether_stalk:0"
+    prices: "100.00;4.00"
+  wheat:
+    slot: 5
+    item: "wheat:0"
+    prices: "50.00;2.50"
+  potato:
+    slot: 6
+    item: "potato_item:0"
+    prices: "100.00;3.00"
+  carrot:
+    slot: 7
+    item: "carrot_item:0"
+    prices: "25.00;2.00"
+  ink sack:
+    slot: 8
+    item: "ink_sack:3"
+    prices: "20.00;2.50"
+  melon seeds:
+    slot: 9
+    item: "melon_seeds:0"
+    prices: "25.00;2.00"
+  pumpkin seeds:
+    slot: 10
+    item: "pumpkin_seeds:0"
+    prices: "25.00;2.25"
+  seeds:
+    slot: 11
+    item: "seeds:0"
+    prices: "25.00;5.00"
+  red mushroom:
+    slot: 12
+    item: "red_mushroom:0"
+    prices: "25.00;2.50"
+  brown mushroom:
+    slot: 13
+    item: "brown_mushroom:0"
+    prices: "25.00;2.50"
+  vine:
+    slot: 14
+    item: "vine:0"
+    prices: "20.00;1.00"
+  water lily:
+    slot: 15
+    item: "water_lily:0"
+    prices: "20.00;1.00"
+  sapling:
+    slot: 16
+    item: "sapling:0"
+    prices: "10.00;1.00"
+  sapling 1:
+    slot: 17
+    item: "sapling:1"
+    prices: "10.00;1.00"
+  sapling 2:
+    slot: 18
+    item: "sapling:2"
+    prices: "10.00;1.00"
+  sapling 3:
+    slot: 19
+    item: "sapling:3"
+    prices: "10.00;1.00"
+  sapling 4:
+    slot: 20
+    item: "sapling:4"
+    prices: "10.00;1.00"
+  sapling 5:
+    slot: 21
+    item: "sapling:5"
+    prices: "10.00;1.00"
+  apple:
+    slot: 22
+    item: "apple:0"
+    prices: "4.00;1.00"
+  log:
+    slot: 23
+    item: "log:0"
+    prices: "5.00;2.00"
+  log 1:
+    slot: 24
+    item: "log:1"
+    prices: "5.00;2.00"
+  log 2:
+    slot: 25
+    item: "log:2"
+    prices: "5.00;2.00"
+  log 3:
+    slot: 26
+    item: "log:3"
+    prices: "5.00;2.00"
+  log2:
+    slot: 27
+    item: "log_2:0"
+    prices: "5.00;2.00"
+  log2 1:
+    slot: 28
+    item: "log_2:1"
+    prices: "5.00;2.00"
+  leaves:
+    slot: 29
+    item: "leaves:0"
+    prices: "1.25;0.10"
+  leaves 1:
+    slot: 30
+    item: "leaves:1"
+    prices: "1.25;0.10"
+  leaves 2:
+    slot: 31
+    item: "leaves:2"
+    prices: "1.25;0.10"
+  leaves 3:
+    slot: 32
+    item: "leaves:3"
+    prices: "1.25;0.10"
+  leaves2:
+    slot: 33
+    item: "leaves_2:0"
+    prices: "1.25;0.10"
+  leaves2 1:
+    slot: 34
+    item: "leaves_2:1"
+    prices: "1.25;0.10"
+  dirt:
+    slot: 35
+    item: "dirt:0"
+    prices: "1.50;0.40"
+  grass:
+    slot: 36
+    item: "grass:0"
+    prices: "10.00;1.50"
+  sand:
+    slot: 37
+    item: "sand:0"
+    prices: "2.00;1.00"
+  red sand:
+    slot: 38
+    item: "sand:1"
+    prices: "2.00;1.00"
+  diamond hoe:
+    slot: 39
+    item: "diamond_hoe:0"
+    prices: "250.00;0.00"

@@ -1,0 +1,14 @@
+name: Merchants
+version: ${project.version}
+main: me.randomhashtags.merchants.Merchants
+author: RandomHashTags
+api-version: 1.13
+softdepend: [Citizens, Factions]
+commands:
+  merchants:
+    usage: /merchants reload
+    description: Reloads the plugin.
+    permission: "Merchants.reload"
+  sell:
+    usage: /sell [hand/chest/inv]
+    description: Sell items to the Merchants!

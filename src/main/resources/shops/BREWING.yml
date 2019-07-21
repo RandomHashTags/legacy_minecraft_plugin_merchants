@@ -1,0 +1,62 @@
+# Made by RandomHashTags
+
+title: "&d&nBrewing Materials"
+size: 18
+
+items:
+  brewing stand:
+    slot: 0
+    item: "brewing_stand_item:0"
+    prices: "50.00;8.00"
+  nether stalk:
+    slot: 1
+    item: "nether_stalk:0"
+    prices: "50.00;3.00"
+  blaze rod:
+    slot: 2
+    item: "blaze_rod:0"
+    prices: "40.00;4.00"
+  sugar:
+    slot: 3
+    item: "sugar:0"
+    prices: "10.00;3.00"
+  ghast tear:
+    slot: 4
+    item: "ghast_tear:0"
+    prices: "60.00;12.00"
+  speckled melon:
+    slot: 5
+    item: "speckled_melon:0"
+    prices: "75.00;5.00"
+  magma cream:
+    slot: 6
+    item: "magma_cream:0"
+    prices: "65.00;5.00"
+  raw fish:
+    slot: 7
+    item: "raw_fish:3"
+    prices: "50.00;10.00"
+  golden carrot:
+    slot: 8
+    item: "golden_carrot:0"
+    prices: "100.00;25.00"
+  rabbit foor:
+    slot: 9
+    item: "rabbit_foot:0"
+    prices: "50.00;5.00"
+  fermented spider eye:
+    slot: 10
+    item: "fermented_spider_eye:0"
+    prices: "75.00;5.00"
+  redstone:
+    slot: 11
+    item: "redstone:0"
+    prices: "30.00;3.00"
+  glowstone dust:
+    slot: 12
+    item: "glowstone_dust:0"
+    prices: "4.00;1.00"
+  sulphur:
+    slot: 13
+    item: "sulphur:0"
+    prices: "20.00;2.00"
