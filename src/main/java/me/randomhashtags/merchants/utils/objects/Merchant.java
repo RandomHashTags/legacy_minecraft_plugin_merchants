@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.utils.classes;
+package me.randomhashtags.merchants.utils.objects;
 
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -49,6 +49,6 @@ public class Merchant {
         return null;
     }
     public static Merchant valueOf(UUID living) {
-        return liveMerchants.keySet().contains(living) ? liveMerchants.get(living) : null;
+        return liveMerchants.getOrDefault(living, null);
     }
 }

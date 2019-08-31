@@ -1,5 +1,4 @@
 # Made by RandomHashTags
-#
 messages:
   purchase success:
   - "&aBought {AMOUNT}x {ITEM} for ${COST}"

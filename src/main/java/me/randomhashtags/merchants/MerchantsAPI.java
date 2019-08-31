@@ -1,13 +1,13 @@
 package me.randomhashtags.merchants;
 
-import me.randomhashtags.merchants.utils.FactionsAPI;
+import me.randomhashtags.merchants.utils.MFeature;
+import me.randomhashtags.merchants.utils.supported.FactionsAPI;
 import me.randomhashtags.merchants.utils.universal.UInventory;
 import me.randomhashtags.merchants.utils.universal.UMaterial;
-import me.randomhashtags.merchants.utils.VaultAPI;
-import me.randomhashtags.merchants.utils.classes.CustomPotion;
-import me.randomhashtags.merchants.utils.classes.Merchant;
-import me.randomhashtags.merchants.utils.classes.MerchantItem;
-import me.randomhashtags.merchants.utils.universal.UVersion;
+import me.randomhashtags.merchants.utils.supported.economy.Vault;
+import me.randomhashtags.merchants.utils.objects.CustomPotion;
+import me.randomhashtags.merchants.utils.objects.Merchant;
+import me.randomhashtags.merchants.utils.objects.MerchantItem;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -24,6 +24,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -38,7 +39,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.io.File;
 import java.util.*;
 
-public class MerchantsAPI extends UVersion implements Listener, CommandExecutor {
+public class MerchantsAPI extends MFeature implements Listener, CommandExecutor {
     private boolean citizens = false, closeInvUponSuccessfulPurchase = true, closeInvUponSuccessfulSell = true;
     private static MerchantsAPI instance;
     public static MerchantsAPI getAPI() {
@@ -46,63 +47,56 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
         return instance;
     }
 
-    private static final TreeMap<Integer, String> treemap = new TreeMap<>();
-    private final HashMap<Player, String> previousShop = new HashMap<>();
-    private final HashMap<Player, MerchantItem> isPurchasing = new HashMap<>(), isSelling = new HashMap<>();
+    private static TreeMap<Integer, String> treemap;
+    private HashMap<Player, String> previousShop;
+    private HashMap<Player, MerchantItem> isPurchasing, isSelling;
 
-    public Merchants merchants = Merchants.getPlugin;
-    private final String v = Bukkit.getVersion();
     private final FactionsAPI fapi = FactionsAPI.getFactionsAPI();
 
     public File dataF;
     public YamlConfiguration data;
 
-    public final YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(merchants.getDataFolder() + File.separator + "shops.yml"));
-    private final FileConfiguration f = merchants.getConfig();
+    public final YamlConfiguration shops = YamlConfiguration.loadConfiguration(new File(merchants.getDataFolder() + File.separator + "shops.yml"));
+    private final FileConfiguration config = merchants.getConfig();
     private UInventory purchaseInv, sellInv;
     private ItemStack purchaseCancel, purchaseOne, purchaseStack, purchaseInventory, sellCancel, sellOne, sellStack, sellInventory;
-    private final HashMap<Integer, List<Integer>> bTypeSlots = new HashMap<>(), sTypeSlots = new HashMap<>();
-    private final List<Integer> purchaseDisplayItem = new ArrayList<>(), sellDisplayItem = new ArrayList<>();
-    private final HashMap<String, MerchantItem[]> shopItems = new HashMap<>();
 
-    public HashMap<String, UInventory> customInventories = new HashMap<>();
-    public HashMap<String, HashMap<Integer, String>> opens = new HashMap<>();
-    public HashMap<String, HashMap<Integer, ItemStack>> purchases = new HashMap<>();
+    private HashMap<Integer, List<Integer>> bTypeSlots, sTypeSlots;
+    private List<Integer> purchaseDisplayItem, sellDisplayItem;
+    public HashMap<String, UInventory> customInventories;
+    public HashMap<String, HashMap<Integer, String>> opens;
+    public HashMap<String, HashMap<Integer, ItemStack>> purchases;
 
-    private boolean isEnabled = false;
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void playerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
-        if(!event.isCancelled()) {
-            final Player player = event.getPlayer();
-            final String m = event.getMessage().substring(1);
-            for(String s : f.getConfigurationSection("commands").getKeys(false)) {
-                final Merchant merchant = Merchant.valueOf(s);
-                if(merchant != null) {
-                    final String cmdp = merchant.getCommandPermission();
-                    if(m.toLowerCase().equals(s)) {
-                        if(!merchant.isAccessibleFromCMD()) return;
-                        else if(cmdp == null || player.hasPermission(cmdp)) {
-                            if(!f.getBoolean("commands." + s + ".cmd")) return;
-                            event.setCancelled(true);
-                            final String i = f.getString("commands." + s + ".opens");
-                            viewInventory(player, i);
-                        }
-                        return;
-                    } else if(m.toLowerCase().startsWith(s + " spawn ") && (cmdp == null || player.hasPermission(f.getString("commands." + s + ".permission") + ".spawn"))) {
+        final Player player = event.getPlayer();
+        final String m = event.getMessage().substring(1);
+        for(String s : config.getConfigurationSection("commands").getKeys(false)) {
+            final Merchant merchant = Merchant.valueOf(s);
+            if(merchant != null) {
+                final String cmdp = merchant.getCommandPermission(), tl = m.toLowerCase();
+                if(tl.equals(s)) {
+                    if(!merchant.isAccessibleFromCMD()) return;
+                    else if(cmdp == null || player.hasPermission(cmdp)) {
+                        if(!config.getBoolean("commands." + s + ".cmd")) return;
                         event.setCancelled(true);
-                        if(citizens) {
-                            final int y = (s + " spawn ").length();
-                            final Merchant mer = Merchant.valueOf(s);
-                            if(mer != null)
-                                mer.spawn(player.getLocation(), ChatColor.translateAlternateColorCodes('&', m.substring(y)));
-                            else
-                                player.sendMessage("[Merchants] That is not a valid Merchant path name!");
-                        } else {
-                            player.sendMessage("[Merchants] You need the Citizens plugin installed to do this!");
-                        }
-                        return;
+                        final String i = config.getString("commands." + s + ".opens");
+                        viewInventory(player, i);
                     }
+                    return;
+                } else if(tl.startsWith(s + " spawn ") && (cmdp == null || player.hasPermission(config.getString("commands." + s + ".permission") + ".spawn"))) {
+                    event.setCancelled(true);
+                    if(citizens) {
+                        final int y = (s + " spawn ").length();
+                        final Merchant mer = Merchant.valueOf(s);
+                        if(mer != null)
+                            mer.spawn(player.getLocation(), ChatColor.translateAlternateColorCodes('&', m.substring(y)));
+                        else
+                            player.sendMessage("[Merchants] That is not a valid Merchant path name!");
+                    } else {
+                        player.sendMessage("[Merchants] You need the Citizens plugin installed to do this!");
+                    }
+                    return;
                 }
             }
         }
@@ -110,7 +104,7 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
 
     private boolean hasPermission(CommandSender sender, String permission, boolean sendNoPerm) {
         if(!(sender instanceof Player) || sender.hasPermission(permission)) return true;
-        if(sendNoPerm) sendStringListMessage(sender, merchants.getConfig().getStringList("messages.no permission"), null);
+        if(sendNoPerm) sendStringListMessage(sender, config.getStringList("messages.no permission"), null);
         return false;
     }
 
@@ -127,9 +121,8 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Merchants] &aMerchants v" + ve + " reloaded."));
             }
         } else if(n.equals("sell") && player != null) {
-            final FileConfiguration c = merchants.getConfig();
             if(l == 0) {
-                sendStringListMessage(player, c.getStringList("messages.sell usage"), null);
+                sendStringListMessage(player, config.getStringList("messages.sell usage"), null);
             } else {
                 final String a = args[0];
                 if(a.equals("chest") && hasPermission(player, "Merchants.sell.chest", true)) {
@@ -143,7 +136,7 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
                             final DoubleChest d = i instanceof DoubleChest ? (DoubleChest) i : null;
                             sellchest(player, d != null ? d.getInventory() : chest.getBlockInventory(), type);
                         } else {
-                            sendStringListMessage(player, c.getStringList("messages.must be looking at chest"), null);
+                            sendStringListMessage(player, config.getStringList("messages.must be looking at chest"), null);
                         }
                     }
                 } else if(a.equals("hand") && hasPermission(player, "Merchants.sell.hand", true) || a.startsWith("inv") && hasPermission(player, "Merchants.sell.inventory", true)) {
@@ -155,7 +148,7 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
     }
 
     private void sellchest(Player player, Inventory inv, String[] type) {
-        final Economy eco = VaultAPI.economy;
+        final Economy eco = Vault.economy;
         final HashMap<UMaterial, Integer> amounts = new HashMap<>();
         for(int i = 0; i < inv.getSize(); i++) {
             final ItemStack is = inv.getItem(i);
@@ -185,11 +178,11 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
             replacements.put("{COST}", formatDouble(cost));
             replacements.put("{ITEM}", m.name());
             eco.depositPlayer(player, cost);
-            sendStringListMessage(player, merchants.getConfig().getStringList("messages.sell success"), replacements);
+            sendStringListMessage(player, config.getStringList("messages.sell success"), replacements);
         }
     }
     public void sellItems(Player player, ItemStack i, boolean inventory) {
-        final FileConfiguration c = merchants.getConfig();
+        final FileConfiguration c = config;
         if(i == null || i.getType().equals(Material.AIR)) {
             sendStringListMessage(player, c.getStringList("messages.need to be holding item"), null);
         } else {
@@ -204,7 +197,7 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
                 if(i.isSimilar(is)) {
                     final HashMap<String, String> replacements = new HashMap<>();
                     replacements.put("{ITEM}", it);
-                    final Economy e = VaultAPI.economy;
+                    final Economy e = Vault.economy;
                     final int amount;
                     if(inventory) {
                         amount = getAmount(player.getInventory(), is);
@@ -258,19 +251,19 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
 
     public void reloadMerchants() {
         citizens = Bukkit.getPluginManager().isPluginEnabled("Citizens");
-        closeInvUponSuccessfulPurchase = config.getBoolean("close inventory upon.successful purchase");
-        closeInvUponSuccessfulSell = config.getBoolean("close inventory upon.successful sell");
-        purchaseInv = new UInventory(null, config.getInt("purchase.size"), ChatColor.translateAlternateColorCodes('&', config.getString("purchase.title")));
-        purchaseCancel = d(config, "purchase.cancel");
-        purchaseOne = d(config, "purchase.one");
-        purchaseStack = d(config, "purchase.stack");
-        purchaseInventory = d(config, "purchase.inventory");
+        closeInvUponSuccessfulPurchase = shops.getBoolean("close inventory upon.successful purchase");
+        closeInvUponSuccessfulSell = shops.getBoolean("close inventory upon.successful sell");
+        purchaseInv = new UInventory(null, shops.getInt("purchase.size"), ChatColor.translateAlternateColorCodes('&', shops.getString("purchase.title")));
+        purchaseCancel = d(shops, "purchase.cancel");
+        purchaseOne = d(shops, "purchase.one");
+        purchaseStack = d(shops, "purchase.stack");
+        purchaseInventory = d(shops, "purchase.inventory");
 
-        sellInv = new UInventory(null, config.getInt("sell.size"), ChatColor.translateAlternateColorCodes('&', config.getString("sell.title")));
-        sellCancel = d(config, "sell.cancel");
-        sellOne = d(config, "sell.one");
-        sellStack = d(config, "sell.stack");
-        sellInventory = d(config, "sell.inventory");
+        sellInv = new UInventory(null, shops.getInt("sell.size"), ChatColor.translateAlternateColorCodes('&', shops.getString("sell.title")));
+        sellCancel = d(shops, "sell.cancel");
+        sellOne = d(shops, "sell.one");
+        sellStack = d(shops, "sell.stack");
+        sellInventory = d(shops, "sell.inventory");
 
         for(int i = 1; i <= 2; i++) {
             final String type = i == 1 ? "purchase" : "sell";
@@ -278,11 +271,11 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
             final ItemStack cancel = i == 1 ? purchaseCancel : sellCancel, one = i == 1 ? purchaseOne : sellOne, stack = i == 1 ? purchaseStack : sellStack, inv = i == 1 ? purchaseInventory : sellInventory;
             final HashMap<Integer, List<Integer>> h = i == 1 ? bTypeSlots : sTypeSlots;
             final List<Integer> displayitems = i == 1 ? purchaseDisplayItem : sellDisplayItem;
-            for(String s : config.getConfigurationSection(type).getKeys(false)) {
+            for(String s : shops.getConfigurationSection(type).getKeys(false)) {
                 if(!s.equals("title") && !s.equals("size") && !s.equals("cancel") && !s.equals("one") && !s.equals("stack") && !s.equals("inventory")) {
-                    final String ii = config.getString(type + "." + s + ".item");
+                    final String ii = shops.getString(type + "." + s + ".item");
                     if(ii != null) {
-                        final int slot = config.getInt(type + "." + s + ".slot");
+                        final int slot = shops.getInt(type + "." + s + ".slot");
                         if(ii.equals("{ITEM}"))
                             displayitems.add(slot);
                         else if(ii.startsWith(type)) {
@@ -291,16 +284,16 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
                             h.get(t).add(slot);
                             inventory.setItem(slot, t == 1 ? one.clone() : t == 2 ? stack.clone() : inv.clone());
                         } else
-                            inventory.setItem(slot, ii.equals("cancel") ? cancel.clone() : d(config,  type + "." + s));
+                            inventory.setItem(slot, ii.equals("cancel") ? cancel.clone() : d(shops,  type + "." + s));
                     }
                 }
             }
         }
-        final List<String> notbuyable = config.getStringList("lores.not buyable"), notsellable = config.getStringList("lores.not sellable");
-        for(String cmd : f.getConfigurationSection("commands").getKeys(false)) {
-            if(f.get("commands." + cmd + ".opens") != null) {
-                final Merchant merchant = new Merchant(cmd, f.getBoolean("commands." + cmd + ".cmd"), f.getString("commands." + cmd + ".command permission"), f.getString("commands." + cmd + ".npc permission"), f.getString("commands." + cmd + ".opens"), f.getBoolean("commands." + cmd + ".npc"));
-                final String o = f.getString("commands." + cmd + ".opens");
+        final List<String> notbuyable = shops.getStringList("lores.not buyable"), notsellable = shops.getStringList("lores.not sellable");
+        for(String cmd : config.getConfigurationSection("commands").getKeys(false)) {
+            if(config.get("commands." + cmd + ".opens") != null) {
+                final Merchant merchant = new Merchant(cmd, config.getBoolean("commands." + cmd + ".cmd"), config.getString("commands." + cmd + ".command permission"), config.getString("commands." + cmd + ".npc permission"), config.getString("commands." + cmd + ".opens"), config.getBoolean("commands." + cmd + ".npc"));
+                final String o = config.getString("commands." + cmd + ".opens");
                 if(!purchases.containsKey(o)) purchases.put(o, new HashMap<>());
                 if(!opens.containsKey(o)) opens.put(o, new HashMap<>());
                 final YamlConfiguration yml = YamlConfiguration.loadConfiguration(new File(merchants.getDataFolder() + File.separator + "shops" + File.separator, o + ".yml"));
@@ -382,7 +375,7 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
                         if(op == null && prices != null) {
                             bp = Double.parseDouble(prices.split(";")[0]);
                             sp = Double.parseDouble(prices.split(";")[1]);
-                            for(String l : config.getStringList("lores.shop lore")) {
+                            for(String l : shops.getStringList("lores.shop lore")) {
                                 if(l.contains("{BUY}")) {
                                     if(bp <= 0.00) {
                                         for(String q : notbuyable) lore.add(ChatColor.translateAlternateColorCodes('&', q));
@@ -404,7 +397,7 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
                         itemMeta.setLore(lore); lore.clear();
                         item.setItemMeta(itemMeta);
                         i.setItem(slot, item);
-                        final ItemStack purchase = config.get("items." + s + ".purchase") == null ? purchases.get(o).get(slot) : d(config, "items." + s + "purchase");
+                        final ItemStack purchase = shops.get("items." + s + ".purchase") == null ? purchases.get(o).get(slot) : d(shops, "items." + s + "purchase");
                         new MerchantItem(o, s, slot, op, bp, sp, item, purchase, yml.getStringList("items." + s + ".commands"));
                     }
                 }
@@ -413,19 +406,31 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
         }
     }
 
-    public void enable() {
-        if(isEnabled) return;
-        isEnabled = true;
-        citizens = Bukkit.getPluginManager().isPluginEnabled("Citizens");
+    public void load() {
+        treemap = new TreeMap<>();
         treemap.put(1000, "M"); treemap.put(900, "CM"); treemap.put(500, "D"); treemap.put(400, "CD"); treemap.put(100, "C"); treemap.put(90, "XC");
         treemap.put(50, "L"); treemap.put(40, "XL"); treemap.put(10, "X"); treemap.put(9, "IX"); treemap.put(5, "V"); treemap.put(4, "IV"); treemap.put(1, "I");
+
+        citizens = pluginmanager.isPluginEnabled("Citizens");
+        previousShop = new HashMap<>();
+        isPurchasing = new HashMap<>();
+        isSelling = new HashMap<>();
+
         reloadMerchants();
         loadMerchants();
+
+        customInventories = new HashMap<>();
+        opens = new HashMap<>();
+        purchases = new HashMap<>();
+
+        bTypeSlots = new HashMap<>();
+        sTypeSlots = new HashMap<>();
+        purchaseDisplayItem = new ArrayList<>();
+        sellDisplayItem = new ArrayList<>();
     }
-    public void disable() {
-        if(!isEnabled) return;
+    public void unload() {
         saveMerchants();
-        final List<String> r = f.getStringList("messages.close due to reload");
+        final List<String> r = config.getStringList("messages.close due to reload");
         for(Player player : isPurchasing.keySet()) {
             sendStringListMessage(player, r, null);
             player.closeInventory();
@@ -434,7 +439,6 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
             sendStringListMessage(player, r, null);
             player.closeInventory();
         }
-        isEnabled = false;
     }
     @EventHandler
     private void inventoryCloseEvent(InventoryCloseEvent event) {
@@ -443,9 +447,9 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
         isSelling.remove(player);
         previousShop.remove(player);
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void inventoryClickEvent(InventoryClickEvent event) {
-        if(!event.isCancelled() && event.getWhoClicked().getOpenInventory().getTopInventory().getHolder() == event.getWhoClicked()) {
+        if(event.getWhoClicked().getOpenInventory().getTopInventory().getHolder() == event.getWhoClicked()) {
             final Player player = (Player) event.getWhoClicked();
             final Inventory top = player.getOpenInventory().getTopInventory();
             final int r = event.getRawSlot();
@@ -488,35 +492,35 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
                 boolean closeInv = true;
                 if(isBuying) {
                     if(event.getCurrentItem().equals(purchaseCancel)) {
-                        message = f.getStringList("messages.purchase cancelled");
-                    } else if(VaultAPI.economy.withdrawPlayer(player, cost).transactionSuccess()) {
+                        message = config.getStringList("messages.purchase cancelled");
+                    } else if(Vault.economy.withdrawPlayer(player, cost).transactionSuccess()) {
                         closeInv = closeInvUponSuccessfulPurchase;
                         final List<String> cmds = mi.executedCommands;
                         final CommandSender cs = Bukkit.getConsoleSender();
                         final String n = player.getName();
                         if(cmds != null && !cmds.isEmpty()) {
-                            message = f.getStringList("messages.purchase success commands");
+                            message = config.getStringList("messages.purchase success commands");
                             for(int z = 1; z <= amount; z++)
                                 for(String s : cmds)
                                     Bukkit.getServer().dispatchCommand(cs, s.replaceFirst("/", "").replace("{PLAYER}", n));
                         } else if(i != null) {
-                            message = f.getStringList("messages.purchase success");
+                            message = config.getStringList("messages.purchase success");
                             giveItem(player, i, amount);
                         }
                     } else {
-                        message = f.getStringList("messages.purchase incomplete");
+                        message = config.getStringList("messages.purchase incomplete");
                     }
                     if(closeInv) isPurchasing.remove(player);
                 } else {
                     if(current.equals(sellCancel)) {
-                        message = f.getStringList("messages.sell cancelled");
+                        message = config.getStringList("messages.sell cancelled");
                     } else if(amount > 0 && player.getInventory().containsAtLeast(i, amount)) {
-                        message = f.getStringList("messages.sell success");
+                        message = config.getStringList("messages.sell success");
                         removeItem(player, i, amount);
-                        VaultAPI.economy.depositPlayer(player, cost);
+                        Vault.economy.depositPlayer(player, cost);
                         closeInv = closeInvUponSuccessfulSell;
                     } else {
-                        message = f.getStringList("messages.sell incomplete");
+                        message = config.getStringList("messages.sell incomplete");
                     }
                     if(closeInv) isSelling.remove(player);
                 }
@@ -560,12 +564,13 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
         }
         return null;
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void potionSplashEvent(PotionSplashEvent event) {
         final CustomPotion cp = CustomPotion.valueOf(event.getEntity().getItem());
         if(cp != null) {
+            final List<PotionEffect> pes = cp.getPotionEffects();
             for(LivingEntity e : event.getAffectedEntities()) {
-                for(PotionEffect pe : cp.getPotionEffects()) {
+                for(PotionEffect pe : pes) {
                     e.removePotionEffect(pe.getType());
                     e.addPotionEffect(pe);
                 }
@@ -573,7 +578,7 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void playerConsumeItemEvent(PlayerItemConsumeEvent event) {
         final ItemStack i = event.getItem();
         if(i.getType().name().contains("POTION") && i.hasItemMeta() && i.getItemMeta().hasLore() && i.getItemMeta().getItemFlags().contains(ItemFlag.HIDE_POTION_EFFECTS)) {
@@ -604,13 +609,17 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
         if(mi.buyPrice > 0.00) {
             open(player, mi, "RANDOMHASHTAGS");
             isPurchasing.put(player, mi);
-        } else sendStringListMessage(player, f.getStringList("messages.not buyable"), new HashMap<>());
+        } else {
+            sendStringListMessage(player, config.getStringList("messages.not buyable"), new HashMap<>());
+        }
     }
     public void openSellView(Player player, MerchantItem mi) {
         if(mi.sellPrice > 0.00) {
             open(player, mi, "RANDONHASHTAGS");
             isSelling.put(player, mi);
-        } else sendStringListMessage(player, f.getStringList("messages.not sellable"), new HashMap<>());
+        } else {
+            sendStringListMessage(player, config.getStringList("messages.not sellable"), new HashMap<>());
+        }
     }
     private void open(Player player, MerchantItem mi, String type) {
         final boolean isBuying = type.equals("RANDOMHASHTAGS");
@@ -718,51 +727,9 @@ public class MerchantsAPI extends UVersion implements Listener, CommandExecutor 
         }
         return item;
     }
-    public int getRemainingInt(String string) {
-        string = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', string)).replaceAll("\\p{L}", "").replaceAll("\\s", "").replaceAll("\\p{P}", "").replaceAll("\\p{S}", "");
-        return string.equals("") ? -1 : Integer.parseInt(string);
-    }
-    public Enchantment getEnchantment(String string) {
-        if(string != null) {
-            for(Enchantment enchant : Enchantment.values())
-                if(enchant != null && enchant.getName() != null && string.toLowerCase().replace("_", "").startsWith(enchant.getName().toLowerCase().replace("_", ""))) return enchant;
-            string = string.toLowerCase().replace("_", "");
-            if(string.startsWith("po")) { return Enchantment.ARROW_DAMAGE; // Power
-            } else if(string.startsWith("fl")) { return Enchantment.ARROW_FIRE; // Flame
-            } else if(string.startsWith("i")) { return Enchantment.ARROW_INFINITE; // Infinity
-            } else if(string.startsWith("pu")) { return Enchantment.ARROW_KNOCKBACK; // Punch
-            } else if(string.startsWith("bi") && !(v.contains("1.8")) && !(v.contains("1.9")) && !(v.contains("1.10"))) { return Enchantment.getByName("BINDING_CURSE"); // Blinding Curse
-            } else if(string.startsWith("sh")) { return Enchantment.DAMAGE_ALL; // Sharpness
-            } else if(string.startsWith("ba")) { return Enchantment.DAMAGE_ARTHROPODS; // Bane of Arthropods
-            } else if(string.startsWith("sm")) { return Enchantment.DAMAGE_UNDEAD; // Smite
-            } else if(string.startsWith("de")) { return Enchantment.DEPTH_STRIDER; // Depth Strider
-            } else if(string.startsWith("e")) { return Enchantment.DIG_SPEED; // Efficiency
-            } else if(string.startsWith("u")) { return Enchantment.DURABILITY; // Unbreaking
-            } else if(string.startsWith("firea")) { return Enchantment.FIRE_ASPECT; // Fire Aspect
-            } else if(string.startsWith("fr") && !(v.contains("1.8"))) { return Enchantment.getByName("FROST_WALKER"); // Frost Walker
-            } else if(string.startsWith("k")) { return Enchantment.KNOCKBACK; // Knockback
-            } else if(string.startsWith("fo")) { return Enchantment.LOOT_BONUS_BLOCKS; // Fortune
-            } else if(string.startsWith("lo")) { return Enchantment.LOOT_BONUS_MOBS; // Looting
-            } else if(string.startsWith("luc")) { return Enchantment.LUCK; // Luck
-            } else if(string.startsWith("lur")) { return Enchantment.LURE; // Lure
-            } else if(string.startsWith("m") && !(v.contains("1.8"))) { return Enchantment.getByName("MENDING"); // Mending
-            } else if(string.startsWith("r")) { return Enchantment.OXYGEN; // Respiration
-            } else if(string.startsWith("prot")) { return Enchantment.PROTECTION_ENVIRONMENTAL; // Protection
-            } else if(string.startsWith("bl") || string.startsWith("bp")) { return Enchantment.PROTECTION_EXPLOSIONS; // Blast Protection
-            } else if(string.startsWith("ff") || string.startsWith("fe")) { return Enchantment.PROTECTION_FALL; // Feather Falling
-            } else if(string.startsWith("fp") || string.startsWith("firep")) { return Enchantment.PROTECTION_FIRE; // Fire Protection
-            } else if(string.startsWith("pp") || string.startsWith("proj")) { return Enchantment.PROTECTION_PROJECTILE; // Projectile Protection
-            } else if(string.startsWith("si")) { return Enchantment.SILK_TOUCH; // Silk Touch
-            } else if(string.startsWith("th")) { return Enchantment.THORNS; // Thorns
-            } else if(string.startsWith("v") && !(v.contains("1.8")) && !(v.contains("1.9")) && !(v.contains("1.10"))) { return Enchantment.getByName("VANISHING_CURSE"); // Vanishing Curse
-            } else if(string.startsWith("aa") || string.startsWith("aq")) { return Enchantment.WATER_WORKER; // Aqua Affinity
-            } else { return null; }
-        }
-        return null;
-    }
     /*
      * This code is from "bhlangonijr" at
-     * https://stackoverflow.com/questions/12967896/converting-integers-to-roman-numerals-java
+     * https://stackoverflow.com/questions/12967896
      */
     public final String toRoman(int number) {
         if(number <= 0) return "";

@@ -1,7 +1,8 @@
-package me.randomhashtags.merchants.utils;
+package me.randomhashtags.merchants.utils.supported;
 
 import me.randomhashtags.merchants.MerchantsAPI;
-import me.randomhashtags.merchants.utils.classes.Merchant;
+import me.randomhashtags.merchants.utils.MFeature;
+import me.randomhashtags.merchants.utils.objects.Merchant;
 import net.citizensnpcs.api.event.DespawnReason;
 import net.citizensnpcs.api.event.NPCDespawnEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
@@ -11,14 +12,19 @@ import org.bukkit.event.Listener;
 
 import java.util.UUID;
 
-public class CitizensEvents implements Listener {
-
+public class CitizensEvents extends MFeature implements Listener {
     private static CitizensEvents instance;
-    public static final CitizensEvents getCitizensEvents() {
+    public static CitizensEvents getCitizensEvents() {
         if(instance == null) instance = new CitizensEvents();
         return instance;
     }
-    private final MerchantsAPI api = MerchantsAPI.getAPI();
+    private MerchantsAPI api;
+
+    public void load() {
+        api = MerchantsAPI.getAPI();
+    }
+    public void unload() {
+    }
 
     @EventHandler
     private void npcDespawnEvent(NPCDespawnEvent event) {
@@ -32,12 +38,16 @@ public class CitizensEvents implements Listener {
     private void npcLeftClickEvent(NPCLeftClickEvent event) {
         final UUID u = event.getNPC().getUniqueId();
         final Merchant m = Merchant.valueOf(u);
-        if(m != null && m.isAccessibleFromNPC()) api.viewInventory(event.getClicker(), m.getOpens());
+        if(m != null && m.isAccessibleFromNPC()) {
+            api.viewInventory(event.getClicker(), m.getOpens());
+        }
     }
     @EventHandler
     private void npcRightClickEvent(NPCRightClickEvent event) {
         final UUID u = event.getNPC().getUniqueId();
         final Merchant m = Merchant.valueOf(u);
-        if(m != null && m.isAccessibleFromNPC()) api.viewInventory(event.getClicker(), m.getOpens());
+        if(m != null && m.isAccessibleFromNPC()) {
+            api.viewInventory(event.getClicker(), m.getOpens());
+        }
     }
 }

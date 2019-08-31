@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.utils.classes;
+package me.randomhashtags.merchants.utils.objects;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;

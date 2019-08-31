@@ -1,22 +1,27 @@
 package me.randomhashtags.merchants;
 
-import me.randomhashtags.merchants.utils.*;
+import me.randomhashtags.merchants.utils.supported.CitizensEvents;
+import me.randomhashtags.merchants.utils.supported.economy.Vault;
 import org.bukkit.*;
 import org.bukkit.command.*;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.util.*;
 
 public final class Merchants extends JavaPlugin {
-
     public static Merchants getPlugin;
     private PluginManager pluginmanager = Bukkit.getPluginManager();
     private MerchantsAPI api;
@@ -62,20 +67,35 @@ public final class Merchants extends JavaPlugin {
         factionPlugin = pluginmanager.isPluginEnabled("Factions") ? pluginmanager.getPlugin("Factions").getDescription().getAuthors().contains("ProSavage") ? "SavageFactions" : "FactionsUUID" : null;
 
         if(pluginmanager.isPluginEnabled("Citizens")) {
-            pluginmanager.registerEvents(CitizensEvents.getCitizensEvents(), this);
+            CitizensEvents.getCitizensEvents().enable();
         }
 
-        final VaultAPI vapi = VaultAPI.getVaultAPI();
-        vapi.setupEconomy();
-        checkforupdate();
+        Vault.getVaultAPI().enable(false);
+        checkForUpdate();
     }
 
     public void onDisable() {
         api.disable();
     }
 
-    private void checkforupdate() {
-        Bukkit.getScheduler().runTaskAsynchronously(this, () -> Updater.getUpdater().checkForUpdate());
+    public void checkForUpdate() {
+        try {
+            final URL checkURL = new URL("https://api.spigotmc.org/legacy/update.php?resource=34855");
+            final URLConnection con = checkURL.openConnection();
+            final String v = getDescription().getVersion(), newVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
+            final boolean canUpdate = !v.equals(newVersion);
+            if(canUpdate) {
+                final String n = "&6[Merchants] &eUpdate available! &aYour version: &f" + v + "&a. Latest version: &f" + newVersion;
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    if(p.isOp() || p.hasPermission("Merchants.updater.notify")) {
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', n));
+                    }
+                }
+                Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', n));
+            }
+        } catch (Exception e) {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Merchants] &aCould not check for updates due to being unable to connect to SpigotMC!"));
+        }
     }
     private void save(String folder, String file) {
         File f = null;
@@ -88,8 +108,6 @@ public final class Merchants extends JavaPlugin {
             saveResource(folder != null && !folder.equals("") ? folder + File.separator + file : file, false);
         }
     }
-
-
 
     public void reload() {
         unload();

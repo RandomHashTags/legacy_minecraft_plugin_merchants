@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.utils.classes;
+package me.randomhashtags.merchants.utils.objects;
 
 import me.randomhashtags.merchants.utils.universal.UMaterial;
 import org.bukkit.Material;
@@ -33,21 +33,25 @@ public class MerchantItem {
     public ItemStack getPurchase() { return purchase != null ? purchase.clone() : null; }
 
     public static MerchantItem valueOf(String merchant, int slot) {
-        for(MerchantItem m : items.get(merchant))
-            if(m.slot == slot)
+        for(MerchantItem m : items.get(merchant)) {
+            if(m.slot == slot) {
                 return m;
+            }
+        }
         return null;
     }
     public static MerchantItem valueOf(String merchant, String path) {
-        for(MerchantItem m : items.get(merchant))
-            if(m.path.equals(path))
+        for(MerchantItem m : items.get(merchant)) {
+            if(m.path.equals(path)) {
                 return m;
+            }
+        }
         return null;
     }
     public static MerchantItem valueOf(ItemStack is) {
         if(is != null && !is.getType().equals(Material.AIR)) {
             final UMaterial u = UMaterial.match(is);
-            if(memory.keySet().contains(u)) return memory.get(u);
+            if(memory.containsKey(u)) return memory.get(u);
             final Material t = u.getMaterial();
             final byte d = u.getData();
             for(String s : items.keySet()) {
