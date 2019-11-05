@@ -1,15 +1,17 @@
 package me.randomhashtags.merchants;
 
-import me.randomhashtags.merchants.utils.MFeature;
-import me.randomhashtags.merchants.utils.supported.FactionsAPI;
-import me.randomhashtags.merchants.utils.universal.UInventory;
-import me.randomhashtags.merchants.utils.universal.UMaterial;
-import me.randomhashtags.merchants.utils.supported.economy.Vault;
-import me.randomhashtags.merchants.utils.objects.CustomPotion;
-import me.randomhashtags.merchants.utils.objects.Merchant;
-import me.randomhashtags.merchants.utils.objects.MerchantItem;
+import me.randomhashtags.merchants.util.MFeature;
+import me.randomhashtags.merchants.util.obj.CustomPotion;
+import me.randomhashtags.merchants.util.obj.Merchant;
+import me.randomhashtags.merchants.util.obj.MerchantItem;
+import me.randomhashtags.merchants.util.supported.FactionsAPI;
+import me.randomhashtags.merchants.util.supported.economy.Vault;
+import me.randomhashtags.merchants.util.universal.UInventory;
+import me.randomhashtags.merchants.util.universal.UMaterial;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -19,8 +21,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,7 +32,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -47,7 +46,6 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         return instance;
     }
 
-    private static TreeMap<Integer, String> treemap;
     private HashMap<Player, String> previousShop;
     private HashMap<Player, MerchantItem> isPurchasing, isSelling;
 
@@ -147,78 +145,6 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         return true;
     }
 
-    private void sellchest(Player player, Inventory inv, String[] type) {
-        final Economy eco = Vault.economy;
-        final HashMap<UMaterial, Integer> amounts = new HashMap<>();
-        for(int i = 0; i < inv.getSize(); i++) {
-            final ItemStack is = inv.getItem(i);
-            if(is != null && !is.getType().equals(Material.AIR)) {
-                final MerchantItem m = MerchantItem.valueOf(is);
-                final double sp = m != null ? m.sellPrice : 0.00;
-                final byte d = is.getData().getData();
-                final String mat = type != null ? type[0].toUpperCase() : null, ism = is.getType().name();
-                final UMaterial um = UMaterial.match(is);
-                final String umn = um != null ? um.name() : null;
-                if(m != null && sp != 0.00 && (type == null || type.length == 1 && (mat.equals(ism) || mat.equals(umn)) || (mat.equals(ism) || mat.equals(umn)) && d == Byte.parseByte(type[1]))) {
-                    final int amount = is.getAmount();
-                    if(!amounts.keySet().contains(um)) amounts.put(um, amount);
-                    else amounts.put(um, amounts.get(um)+amount);
-                    inv.setItem(i, new ItemStack(Material.AIR));
-                }
-            }
-        }
-        for(UMaterial m : amounts.keySet()) {
-            final int amount = amounts.get(m);
-            final MerchantItem mi = MerchantItem.valueOf(m.getItemStack());
-            final double sp = mi.sellPrice;
-            final double cost = round(amount*sp, 2);
-            final HashMap<String, String> replacements = new HashMap<>();
-            replacements.put("{SELL}", formatDouble(sp));
-            replacements.put("{AMOUNT}", formatInt(amount));
-            replacements.put("{COST}", formatDouble(cost));
-            replacements.put("{ITEM}", m.name());
-            eco.depositPlayer(player, cost);
-            sendStringListMessage(player, config.getStringList("messages.sell success"), replacements);
-        }
-    }
-    public void sellItems(Player player, ItemStack i, boolean inventory) {
-        final FileConfiguration c = config;
-        if(i == null || i.getType().equals(Material.AIR)) {
-            sendStringListMessage(player, c.getStringList("messages.need to be holding item"), null);
-        } else {
-            final MerchantItem m = MerchantItem.valueOf(i);
-            final List<String> msg = c.getStringList("messages.cannot sell item to server");
-            if(m == null) {
-                sendStringListMessage(player, msg, null);
-            } else {
-                final ItemStack is = m.getPurchase();
-                final String it = is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : UMaterial.match(is).name();
-                final double s = m.sellPrice;
-                if(i.isSimilar(is)) {
-                    final HashMap<String, String> replacements = new HashMap<>();
-                    replacements.put("{ITEM}", it);
-                    final Economy e = Vault.economy;
-                    final int amount;
-                    if(inventory) {
-                        amount = getAmount(player.getInventory(), is);
-                        removeItem(player, is, amount);
-                    } else {
-                        amount = i.getAmount();
-                        player.getInventory().setItemInHand(new ItemStack(Material.AIR));
-                    }
-                    final double total = amount*s;
-                    replacements.put("{COST}", formatDouble(total));
-                    replacements.put("{AMOUNT}", formatInt(amount));
-                    e.depositPlayer(player, total);
-                    sendStringListMessage(player, c.getStringList("messages.sell success"), replacements);
-                    player.updateInventory();
-                } else {
-                    sendStringListMessage(player, msg, null);
-                }
-            }
-        }
-    }
-
     public void saveMerchants() {
         if(data == null) {
             dataF = new File(merchants.getDataFolder() + File.separator + "_data.yml");
@@ -250,7 +176,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
     }
 
     public void reloadMerchants() {
-        citizens = Bukkit.getPluginManager().isPluginEnabled("Citizens");
+        citizens = pluginmanager.isPluginEnabled("Citizens");
         closeInvUponSuccessfulPurchase = shops.getBoolean("close inventory upon.successful purchase");
         closeInvUponSuccessfulSell = shops.getBoolean("close inventory upon.successful sell");
         purchaseInv = new UInventory(null, shops.getInt("purchase.size"), ChatColor.translateAlternateColorCodes('&', shops.getString("purchase.title")));
@@ -338,21 +264,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                             String type = null;
                             for(PotionEffect b : effects) {
                                 if(type == null || type.equals("AWKWARD")) {
-                                    final PotionEffectType a = b.getType();
-                                    if(a.equals(PotionEffectType.FIRE_RESISTANCE)) type = "FIRE_RESISTANCE";
-                                    else if(a.equals(PotionEffectType.HARM)) type = "HARMING_1";
-                                    else if(a.equals(PotionEffectType.HEAL)) type = "HEALING_1";
-                                    else if(a.equals(PotionEffectType.INCREASE_DAMAGE)) type = "STRENGTH_1";
-                                    else if(a.equals(PotionEffectType.INVISIBILITY)) type = "INVISIBILITY";
-                                    else if(a.equals(PotionEffectType.JUMP)) type = "LEAPING_1";
-                                    else if(a.equals(PotionEffectType.NIGHT_VISION)) type = "NIGHT_VISION";
-                                    else if(a.equals(PotionEffectType.POISON)) type = "POISON_1";
-                                    else if(a.equals(PotionEffectType.REGENERATION)) type = "REGENERATION_1";
-                                    else if(a.equals(PotionEffectType.SLOW)) type = "SLOWNESS_1";
-                                    else if(a.equals(PotionEffectType.SPEED)) type = "SWIFTNESS_1";
-                                    else if(a.equals(PotionEffectType.WATER_BREATHING)) type = "WATER_BREATHING";
-                                    else if(a.equals(PotionEffectType.WEAKNESS)) type = "WEAKNESS";
-                                    else type = "AWKWARD";
+                                    type = potionToString(b.getType());
                                     item = UMaterial.valueOf((isSplash ? "SPLASH_" : "") + "POTION_" + type).getItemStack();
                                 }
                             }
@@ -407,10 +319,6 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
     }
 
     public void load() {
-        treemap = new TreeMap<>();
-        treemap.put(1000, "M"); treemap.put(900, "CM"); treemap.put(500, "D"); treemap.put(400, "CD"); treemap.put(100, "C"); treemap.put(90, "XC");
-        treemap.put(50, "L"); treemap.put(40, "XL"); treemap.put(10, "X"); treemap.put(9, "IX"); treemap.put(5, "V"); treemap.put(4, "IV"); treemap.put(1, "I");
-
         citizens = pluginmanager.isPluginEnabled("Citizens");
         previousShop = new HashMap<>();
         isPurchasing = new HashMap<>();
@@ -604,7 +512,6 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
     }
 
 
-
     public void openPurchaseView(Player player, MerchantItem mi) {
         if(mi.buyPrice > 0.00) {
             open(player, mi, "RANDOMHASHTAGS");
@@ -664,77 +571,75 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         }
     }
 
-    public ItemStack d(FileConfiguration config, String path) {
-        item = null;
-        if(config == null && path != null || config != null && config.get(path + ".item") != null) {
-            if(config != null && config.getString(path + ".item").toLowerCase().contains("spawner") && !config.getString(path + ".item").toLowerCase().startsWith("mob_spawner")) {
-                item = UMaterial.SPAWNER.getItemStack(); itemMeta = item.getItemMeta();
-                if(config.get(path + ".name") != null) {
-                    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString(path + ".name")));
-                    item.setItemMeta(itemMeta);
-                }
-                return item;
-            }
-            int amount = config != null && config.get(path + ".amount") != null ? config.getInt(path + ".amount") : 1;
-            if(config == null && path.toLowerCase().contains(";amount=")) {
-                amount = Integer.parseInt(path.toLowerCase().split(";amount=")[1]);
-                path = path.split(";amount=")[0];
-            }
-            boolean enchanted = config != null && config.getBoolean(path + ".enchanted");
-            lore.clear();
-            String it = config != null ? config.getString(path + ".item").toUpperCase() : path, name = config != null ? config.getString(path + ".name") : null;
-            final String material = it.toUpperCase();
-            final UMaterial u;
-            try {
-                u = UMaterial.match(material);
-                item = u.getItemStack();
-            } catch (NullPointerException e) {
-                Bukkit.broadcastMessage("Unrecognized material: " + material);
-                return null;
-            }
-            final Material skullitem = UMaterial.PLAYER_HEAD_ITEM.getMaterial();
-            item.setAmount(amount);
-            itemMeta = item.getItemMeta();
-            if(item.getType().equals(skullitem) && item.getData().getData() == 3) {
-                ((SkullMeta) itemMeta).setOwner(it.split(":").length == 4 ? it.split(":")[3].split("}")[0] : "RandomHashTags");
-            } else if(u.name().contains("SPAWN_EGG") && (v.contains("1.9") || v.contains("1.10") || v.contains("1.11") || v.contains("1.12"))) {
-                ((org.bukkit.inventory.meta.SpawnEggMeta) itemMeta).setSpawnedType(EntityType.valueOf(u.name().split("_SPAWN_EGG")[0]));
-            }
-            itemMeta.setDisplayName(name != null ? ChatColor.translateAlternateColorCodes('&', name) : null);
-
-            if(enchanted) itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            final HashMap<Enchantment, Integer> enchants = new HashMap<>();
-            if(config != null && config.get(path + ".lore") != null) {
-                lore.clear();
-                for(String string : config.getStringList(path + ".lore")) {
-                    if(string.toLowerCase().startsWith("e:"))
-                        enchants.put(getEnchantment(string.split(":")[1]), getRemainingInt(string));
-                    else if(string.toLowerCase().startsWith("venchants{")) {
-                        for(String s : string.split("\\{")[1].split("}")[0].split(";")) {
-                            enchants.put(getEnchantment(s), getRemainingInt(s));
-                        }
-                    } else
-                        lore.add(ChatColor.translateAlternateColorCodes('&', string));
+    private void sellchest(Player player, Inventory inv, String[] type) {
+        final Economy eco = Vault.economy;
+        final HashMap<UMaterial, Integer> amounts = new HashMap<>();
+        for(int i = 0; i < inv.getSize(); i++) {
+            final ItemStack is = inv.getItem(i);
+            if(is != null && !is.getType().equals(Material.AIR)) {
+                final MerchantItem m = MerchantItem.valueOf(is);
+                final double sp = m != null ? m.sellPrice : 0.00;
+                final byte d = is.getData().getData();
+                final String mat = type != null ? type[0].toUpperCase() : null, ism = is.getType().name();
+                final UMaterial um = UMaterial.match(is);
+                final String umn = um != null ? um.name() : null;
+                if(m != null && sp != 0.00 && (type == null || type.length == 1 && (mat.equals(ism) || mat.equals(umn)) || (mat.equals(ism) || mat.equals(umn)) && d == Byte.parseByte(type[1]))) {
+                    final int amount = is.getAmount();
+                    if(!amounts.keySet().contains(um)) amounts.put(um, amount);
+                    else amounts.put(um, amounts.get(um)+amount);
+                    inv.setItem(i, new ItemStack(Material.AIR));
                 }
             }
-            itemMeta.setLore(lore);
-            item.setItemMeta(itemMeta);
-            lore.clear();
-            if(enchanted) item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
-            for(Enchantment enchantment : enchants.keySet())
-                if(enchantment != null)
-                    item.addUnsafeEnchantment(enchantment, enchants.get(enchantment));
         }
-        return item;
+        for(UMaterial m : amounts.keySet()) {
+            final int amount = amounts.get(m);
+            final MerchantItem mi = MerchantItem.valueOf(m.getItemStack());
+            final double sp = mi.sellPrice;
+            final double cost = round(amount*sp, 2);
+            final HashMap<String, String> replacements = new HashMap<>();
+            replacements.put("{SELL}", formatDouble(sp));
+            replacements.put("{AMOUNT}", formatInt(amount));
+            replacements.put("{COST}", formatDouble(cost));
+            replacements.put("{ITEM}", m.name());
+            eco.depositPlayer(player, cost);
+            sendStringListMessage(player, config.getStringList("messages.sell success"), replacements);
+        }
     }
-    /*
-     * This code is from "bhlangonijr" at
-     * https://stackoverflow.com/questions/12967896
-     */
-    public final String toRoman(int number) {
-        if(number <= 0) return "";
-        int l = treemap.floorKey(number);
-        if(number == l) return treemap.get(number);
-        return treemap.get(l) + toRoman(number - l);
+    public void sellItems(Player player, ItemStack i, boolean inventory) {
+        final FileConfiguration c = config;
+        if(i == null || i.getType().equals(Material.AIR)) {
+            sendStringListMessage(player, c.getStringList("messages.need to be holding item"), null);
+        } else {
+            final MerchantItem m = MerchantItem.valueOf(i);
+            final List<String> msg = c.getStringList("messages.cannot sell item to server");
+            if(m == null) {
+                sendStringListMessage(player, msg, null);
+            } else {
+                final ItemStack is = m.getPurchase();
+                final String it = is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : UMaterial.match(is).name();
+                final double s = m.sellPrice;
+                if(i.isSimilar(is)) {
+                    final HashMap<String, String> replacements = new HashMap<>();
+                    replacements.put("{ITEM}", it);
+                    final Economy e = Vault.economy;
+                    final int amount;
+                    if(inventory) {
+                        amount = getAmount(player.getInventory(), is);
+                        removeItem(player, is, amount);
+                    } else {
+                        amount = i.getAmount();
+                        player.getInventory().setItemInHand(new ItemStack(Material.AIR));
+                    }
+                    final double total = amount*s;
+                    replacements.put("{COST}", formatDouble(total));
+                    replacements.put("{AMOUNT}", formatInt(amount));
+                    e.depositPlayer(player, total);
+                    sendStringListMessage(player, c.getStringList("messages.sell success"), replacements);
+                    player.updateInventory();
+                } else {
+                    sendStringListMessage(player, msg, null);
+                }
+            }
+        }
     }
 }
