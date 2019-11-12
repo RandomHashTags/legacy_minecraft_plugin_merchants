@@ -17,7 +17,7 @@ public class Vault extends MFeature implements Economical {
 		return instance;
 	}
 	
-	private Economy economy = null;
+	public Economy economy;
 	public void load() {
 		final RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
 		if(economyProvider != null) {

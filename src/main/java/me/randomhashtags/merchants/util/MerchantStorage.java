@@ -16,4 +16,7 @@ public abstract class MerchantStorage {
             MERCHANTS.remove(merchant.getIdentifier());
         }
     }
+    public static Merchant getMerchant(String identifier) {
+        return MERCHANTS.getOrDefault(identifier, null);
+    }
 }

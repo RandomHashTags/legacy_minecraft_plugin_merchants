@@ -4,6 +4,7 @@ import me.randomhashtags.merchants.Merchants;
 import me.randomhashtags.merchants.util.Versionable;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -13,6 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -39,6 +41,7 @@ public interface UVersionable extends Versionable {
     Merchants merchants = Merchants.getPlugin;
     File dataFolder = merchants.getDataFolder();
     String v = Bukkit.getVersion();
+    Server server = Bukkit.getServer();
     ConsoleCommandSender console = Bukkit.getConsoleSender();
 
     default String toRoman(int number) {
@@ -153,5 +156,15 @@ public interface UVersionable extends Versionable {
             } else { return null; }
         }
         return null;
+    }
+
+    default List<String> colorizeListString(List<String> input) {
+        final List<String> i = new ArrayList<>();
+        if(input != null) {
+            for(String s : input) {
+                i.add(ChatColor.translateAlternateColorCodes('&', s));
+            }
+        }
+        return i;
     }
 }
