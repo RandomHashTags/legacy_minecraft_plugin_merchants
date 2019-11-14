@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "brewing"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.brewing.cmd"
+    npc: "Merchants.brewing.npc"
+#
 title: "&d&nBrewing Materials"
 size: 18
 

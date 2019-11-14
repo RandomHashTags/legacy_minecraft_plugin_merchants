@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "fish"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.fish.cmd"
+    npc: "Merchants.fish.npc"
+#
 title: "&d&nFishing Supplies"
 size: 9
 

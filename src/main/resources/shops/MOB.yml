@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "mob"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.mob.cmd"
+    npc: "Merchants.mob.npc"
+#
 title: "&d&nMob Drops"
 size: 45
 

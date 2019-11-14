@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "potions"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.potions.cmd"
+    npc: "Merchants.potions.npc"
+#
 title: "&d&nPotions"
 size: 18
 

@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "raid"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.raid.cmd"
+    npc: "Merchants.raid.npc"
+#
 title: "&d&nRaiding Materials"
 size: 27
 

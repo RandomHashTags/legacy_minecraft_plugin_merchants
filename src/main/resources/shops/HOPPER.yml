@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "hopper"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.hopper.cmd"
+    npc: "Merchants.hopper.npc"
+#
 title: "&d&nHoppers"
 size: 9
 

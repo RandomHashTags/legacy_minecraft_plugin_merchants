@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "color"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.color.cmd"
+    npc: "Merchants.color.npc"
+#
 title: "&d&nColored Blocks"
 size: 36
 

@@ -1,4 +1,14 @@
 # Made by RandomHashTags
+settings:
+  command: "enchanter"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.enchanter.cmd"
+    npc: "Merchants.enchanter.npc"
+#
+#
 select item:
   title: "&c&nSelect an Item"
   size: 36

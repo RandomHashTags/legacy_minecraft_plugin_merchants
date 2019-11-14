@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "decor"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.decor.cmd"
+    npc: "Merchants.decor.npc"
+#
 title: "&d&nDecoration"
 size: 54
 

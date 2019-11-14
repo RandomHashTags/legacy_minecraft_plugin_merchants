@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "elixir"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.elixir.cmd"
+    npc: "Merchants.elixir.npc"
+#
 title: "&d&nElixir Merchant"
 size: 9
 

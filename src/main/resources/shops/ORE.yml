@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "ore"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.ore.cmd"
+    npc: "Merchants.ore.npc"
+#
 title: "&d&nMinerals"
 size: 18
 

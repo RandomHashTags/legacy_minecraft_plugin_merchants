@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "farming"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.farming.cmd"
+    npc: "Merchants.farming.npc"
+#
 title: "&d&nFarming"
 size: 45
 

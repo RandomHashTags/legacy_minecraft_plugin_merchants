@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "misc"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.misc.cmd"
+    npc: "Merchants.misc.npc"
+#
 title: "&d&nMiscellaneous"
 size: 9
 

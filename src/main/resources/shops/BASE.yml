@@ -1,5 +1,13 @@
 # Made by RandomHashTags
-
+settings:
+  command: "base"
+  accessibility:
+    cmd: true
+    npc: true
+  permissions:
+    cmd: "Merchants.base.cmd"
+    npc: "Merchants.base.npc"
+#
 title: "&d&nBase Building"
 size: 18
 
