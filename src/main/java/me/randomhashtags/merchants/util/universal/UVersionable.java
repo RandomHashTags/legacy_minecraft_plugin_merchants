@@ -167,4 +167,5 @@ public interface UVersionable extends Versionable {
         }
         return i;
     }
+    default String colorize(String input) { return input != null ? ChatColor.translateAlternateColorCodes('&', input) : ""; }
 }

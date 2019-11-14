@@ -1,5 +1,6 @@
 package me.randomhashtags.merchants;
 
+import me.randomhashtags.merchants.addon.FileMerchant;
 import me.randomhashtags.merchants.util.MFeature;
 import me.randomhashtags.merchants.util.OpenType;
 import me.randomhashtags.merchants.util.obj.CustomPotion;
@@ -93,7 +94,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                         final int y = (s + " spawn ").length();
                         final Merchant mer = Merchant.valueOf(s);
                         if(mer != null) {
-                            mer.spawn(player.getLocation(), ChatColor.translateAlternateColorCodes('&', m.substring(y)));
+                            mer.spawn(player.getLocation(), colorize(m.substring(y)));
                         } else {
                             player.sendMessage("[Merchants] That is not a valid Merchant path name!");
                         }
@@ -122,7 +123,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                 sendStringListMessage(sender, Arrays.asList("&6[Merchants] &aVersion: &e" + ve), null);
             } else if(l == 1 && args[0].equals("reload")) {
                 merchants.reload();
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Merchants] &aMerchants v" + ve + " reloaded."));
+                sender.sendMessage(colorize("&6[Merchants] &aMerchants v" + ve + " reloaded."));
             }
         } else if(n.equals("sell") && player != null) {
             if(l == 0) {
@@ -180,56 +181,6 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
             }
         }
     }
-
-    public void reloadMerchants() {
-        citizens = pluginmanager.isPluginEnabled("Citizens");
-        closeInvUponSuccessfulPurchase = shops.getBoolean("close inventory upon.successful purchase");
-        closeInvUponSuccessfulSell = shops.getBoolean("close inventory upon.successful sell");
-        purchaseInv = new UInventory(null, shops.getInt("purchase.size"), ChatColor.translateAlternateColorCodes('&', shops.getString("purchase.title")));
-        purchaseCancel = d(shops, "purchase.cancel");
-        purchaseOne = d(shops, "purchase.one");
-        purchaseStack = d(shops, "purchase.stack");
-        purchaseInventory = d(shops, "purchase.inventory");
-
-        sellInv = new UInventory(null, shops.getInt("sell.size"), ChatColor.translateAlternateColorCodes('&', shops.getString("sell.title")));
-        sellCancel = d(shops, "sell.cancel");
-        sellOne = d(shops, "sell.one");
-        sellStack = d(shops, "sell.stack");
-        sellInventory = d(shops, "sell.inventory");
-
-        for(int i = 1; i <= 2; i++) {
-            final boolean isPurchase = i == 1;
-            final String type = isPurchase ? "purchase" : "sell";
-            final Inventory inventory = (isPurchase ? purchaseInv : sellInv).getInventory();
-            final ItemStack cancel = isPurchase ? purchaseCancel : sellCancel, one = isPurchase ? purchaseOne : sellOne, stack = isPurchase ? purchaseStack : sellStack, inv = isPurchase ? purchaseInventory : sellInventory;
-            final HashMap<Integer, List<Integer>> h = isPurchase ? bTypeSlots : sTypeSlots;
-            final List<Integer> displayitems = isPurchase ? purchaseDisplayItem : sellDisplayItem;
-            for(String s : shops.getConfigurationSection(type).getKeys(false)) {
-                if(!s.equals("title") && !s.equals("size") && !s.equals("cancel") && !s.equals("one") && !s.equals("stack") && !s.equals("inventory")) {
-                    final String ii = shops.getString(type + "." + s + ".item");
-                    if(ii != null) {
-                        final int slot = shops.getInt(type + "." + s + ".slot");
-                        if(ii.equals("{ITEM}")) {
-                            displayitems.add(slot);
-                        } else if(ii.startsWith(type)) {
-                            final int t = ii.contains("one") ? 1 : ii.contains("stack") ? 2 : 3;
-                            if(!h.keySet().contains(t)) h.put(t, new ArrayList<>());
-                            h.get(t).add(slot);
-                            inventory.setItem(slot, t == 1 ? one.clone() : t == 2 ? stack.clone() : inv.clone());
-                        } else {
-                            inventory.setItem(slot, ii.equals("cancel") ? cancel.clone() : d(shops, type + "." + s));
-                        }
-                    }
-                }
-            }
-        }
-        final List<String> notbuyable = colorizeListString(shops.getStringList("lores.not buyable")), notsellable = colorizeListString(shops.getStringList("lores.not sellable")), shoplore = colorizeListString(shops.getStringList("lores.shop lore"));
-        for(String cmd : config.getConfigurationSection("commands").getKeys(false)) {
-            if(config.get("commands." + cmd + ".opens") != null) {
-                createMerchant(cmd, notbuyable, notsellable, shoplore);
-            }
-        }
-    }
     
     private void createMerchant(String cmd, List<String> notbuyable, List<String> notsellable, List<String> shoplore) {
         final Merchant merchant = new Merchant(cmd, config.getBoolean("commands." + cmd + ".cmd"), config.getString("commands." + cmd + ".command permission"), config.getString("commands." + cmd + ".npc permission"), config.getString("commands." + cmd + ".opens"), config.getBoolean("commands." + cmd + ".npc"));
@@ -241,7 +192,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
             opens.put(o, new HashMap<>());
         }
         final YamlConfiguration yml = YamlConfiguration.loadConfiguration(new File(dataFolder + separator + "shops" + separator, o + ".yml"));
-        final UInventory ui = new UInventory(null, yml.getInt("size"), ChatColor.translateAlternateColorCodes('&', yml.getString("title")));
+        final UInventory ui = new UInventory(null, yml.getInt("size"), colorize(yml.getString("title")));
         final Inventory i = ui.getInventory();
         for(String s : yml.getConfigurationSection("items").getKeys(false)) {
             if(!s.equals("title") && !s.equals("size")) {
@@ -277,7 +228,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                                 lore.add(c + tnn + " " + toRoman(lvl+1) + time);
                             }
                         } else {
-                            lore.add(ChatColor.translateAlternateColorCodes('&', p));
+                            lore.add(colorize(p));
                         }
                     }
                     String type = null;
@@ -291,7 +242,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                     itemMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
                     final String n = yml.getString("items." + s + ".name");
                     if(n != null) {
-                        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', n));
+                        itemMeta.setDisplayName(colorize(n));
                     }
                     itemMeta.setLore(lore); lore.clear();
                     item.setItemMeta(itemMeta);
@@ -329,7 +280,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                             }
                         }
                         if(!isBuy && !isSell) {
-                            lore.add(ChatColor.translateAlternateColorCodes('&', l));
+                            lore.add(colorize(l));
                         }
                     }
                 }
@@ -349,9 +300,6 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         isPurchasing = new HashMap<>();
         isSelling = new HashMap<>();
 
-        reloadMerchants();
-        loadMerchants();
-
         customInventories = new HashMap<>();
         opens = new HashMap<>();
         purchases = new HashMap<>();
@@ -360,6 +308,57 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         sTypeSlots = new HashMap<>();
         purchaseDisplayItem = new ArrayList<>();
         sellDisplayItem = new ArrayList<>();
+
+        citizens = pluginmanager.isPluginEnabled("Citizens");
+        closeInvUponSuccessfulPurchase = shops.getBoolean("close inventory upon.successful purchase");
+        closeInvUponSuccessfulSell = shops.getBoolean("close inventory upon.successful sell");
+        purchaseInv = new UInventory(null, shops.getInt("purchase.size"), colorize(shops.getString("purchase.title")));
+        purchaseCancel = d(shops, "purchase.cancel");
+        purchaseOne = d(shops, "purchase.one");
+        purchaseStack = d(shops, "purchase.stack");
+        purchaseInventory = d(shops, "purchase.inventory");
+
+        sellInv = new UInventory(null, shops.getInt("sell.size"), colorize(shops.getString("sell.title")));
+        sellCancel = d(shops, "sell.cancel");
+        sellOne = d(shops, "sell.one");
+        sellStack = d(shops, "sell.stack");
+        sellInventory = d(shops, "sell.inventory");
+
+        for(int i = 1; i <= 2; i++) {
+            final boolean isPurchase = i == 1;
+            final String type = isPurchase ? "purchase" : "sell";
+            final Inventory inventory = (isPurchase ? purchaseInv : sellInv).getInventory();
+            final ItemStack cancel = isPurchase ? purchaseCancel : sellCancel, one = isPurchase ? purchaseOne : sellOne, stack = isPurchase ? purchaseStack : sellStack, inv = isPurchase ? purchaseInventory : sellInventory;
+            final HashMap<Integer, List<Integer>> h = isPurchase ? bTypeSlots : sTypeSlots;
+            final List<Integer> displayitems = isPurchase ? purchaseDisplayItem : sellDisplayItem;
+            for(String s : shops.getConfigurationSection(type).getKeys(false)) {
+                if(!s.equals("title") && !s.equals("size") && !s.equals("cancel") && !s.equals("one") && !s.equals("stack") && !s.equals("inventory")) {
+                    final String ii = shops.getString(type + "." + s + ".item");
+                    if(ii != null) {
+                        final int slot = shops.getInt(type + "." + s + ".slot");
+                        if(ii.equals("{ITEM}")) {
+                            displayitems.add(slot);
+                        } else if(ii.startsWith(type)) {
+                            final int t = ii.contains("one") ? 1 : ii.contains("stack") ? 2 : 3;
+                            if(!h.containsKey(t)) {
+                                h.put(t, new ArrayList<>());
+                            }
+                            h.get(t).add(slot);
+                            inventory.setItem(slot, (t == 1 ? one : t == 2 ? stack : inv).clone());
+                        } else {
+                            inventory.setItem(slot, ii.equals("cancel") ? cancel.clone() : d(shops, type + "." + s));
+                        }
+                    }
+                }
+            }
+        }
+        final List<String> notbuyable = colorizeListString(shops.getStringList("lores.not buyable")), notsellable = colorizeListString(shops.getStringList("lores.not sellable")), shoplore = colorizeListString(shops.getStringList("lores.shop lore"));
+
+        for(File f : new File(dataFolder + separator + "shops").listFiles()) {
+            new FileMerchant(f);
+        }
+        
+        loadMerchants();
     }
     public void unload() {
         saveMerchants();
