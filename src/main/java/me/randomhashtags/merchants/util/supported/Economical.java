@@ -1,12 +1,13 @@
 package me.randomhashtags.merchants.util.supported;
 
+import me.randomhashtags.merchants.util.universal.UVersionable;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public interface Economical {
+public interface Economical extends UVersionable {
     BigDecimal getBalance(UUID player);
     default BigDecimal getBalance(OfflinePlayer player) { return player != null ? getBalance(player.getUniqueId()) : BigDecimal.ZERO; }
     default BigDecimal getBalance(Player player) { return player != null ? getBalance(player.getUniqueId()) : BigDecimal.ZERO; }

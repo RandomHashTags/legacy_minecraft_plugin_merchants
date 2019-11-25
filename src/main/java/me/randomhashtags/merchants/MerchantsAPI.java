@@ -605,8 +605,11 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                 final String umn = um != null ? um.name() : null;
                 if(m != null && sp != 0.00 && (type == null || type.length == 1 && (mat.equals(ism) || mat.equals(umn)) || (mat.equals(ism) || mat.equals(umn)) && d == Byte.parseByte(type[1]))) {
                     final int amount = is.getAmount();
-                    if(!amounts.keySet().contains(um)) amounts.put(um, amount);
-                    else amounts.put(um, amounts.get(um)+amount);
+                    if(!amounts.containsKey(um)) {
+                        amounts.put(um, amount);
+                    } else {
+                        amounts.put(um, amounts.get(um)+amount);
+                    }
                     inv.setItem(i, new ItemStack(Material.AIR));
                 }
             }
