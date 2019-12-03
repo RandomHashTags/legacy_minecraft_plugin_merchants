@@ -37,7 +37,11 @@ import org.bukkit.inventory.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 
 import static java.io.File.separator;
@@ -168,10 +172,28 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         }
     }
     public void loadMerchants() {
-        if(data == null) {
-            dataF = new File(dataFolder + separator + "_data.yml");
-            data = YamlConfiguration.loadConfiguration(dataF);
+        checkForUpdate();
+        save(null, "_data.yml");
+        File dataF = new File(dataFolder + separator, "_data.yml");
+        YamlConfiguration data = YamlConfiguration.loadConfiguration(dataF);
+        if(data.getBoolean("save default shops")) {
+            data.set("save default shops", false);
+            try {
+                data.save(dataF);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final String[] shops = new String[] {
+                    "BASE", "BREWING", "COLOR", "DECOR",
+                    "ELIXIR", "ELIXERS", "FARMING", "FISH",
+                    "HOPPER", "MISC", "MOB", "ORE", "POTIONS",
+                    "RAID"
+            };
+            for(String s : shops) {
+                save("shops", s + ".yml");
+            }
         }
+        save(null, "shops.yml");
         final ConfigurationSection cs = data.getConfigurationSection("living");
         final Set<String> set = cs != null ? cs.getKeys(false) : null;
         if(set != null) {
@@ -663,6 +685,26 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                     sendStringListMessage(player, msg, null);
                 }
             }
+        }
+    }
+
+    private void checkForUpdate() {
+        try {
+            final URL checkURL = new URL("https://api.spigotmc.org/legacy/update.php?resource=34855");
+            final URLConnection con = checkURL.openConnection();
+            final String v = merchants.getDescription().getVersion(), newVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
+            final boolean canUpdate = !v.equals(newVersion);
+            if(canUpdate) {
+                final String n = ChatColor.translateAlternateColorCodes('&', "&6[Merchants] &eUpdate available! &aYour version: &f" + v + "&a. Latest version: &f" + newVersion);
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    if(p.isOp() || p.hasPermission("Merchants.updater.notify")) {
+                        p.sendMessage(n);
+                    }
+                }
+                console.sendMessage(n);
+            }
+        } catch (Exception e) {
+            console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Merchants] &aCould not check for updates due to being unable to connect to SpigotMC!"));
         }
     }
 }
