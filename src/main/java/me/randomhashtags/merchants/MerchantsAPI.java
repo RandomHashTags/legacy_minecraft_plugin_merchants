@@ -1,11 +1,13 @@
 package me.randomhashtags.merchants;
 
-import me.randomhashtags.merchants.addon.FileMerchant;
+import com.sun.istack.internal.NotNull;
+import me.randomhashtags.merchants.addon.Merchant;
+import me.randomhashtags.merchants.addon.MerchantItem;
+import me.randomhashtags.merchants.addon.file.FileMerchant;
+import me.randomhashtags.merchants.addon.obj.CustomPotion;
 import me.randomhashtags.merchants.util.MFeature;
+import me.randomhashtags.merchants.util.MerchantStorage;
 import me.randomhashtags.merchants.util.OpenType;
-import me.randomhashtags.merchants.util.obj.CustomPotion;
-import me.randomhashtags.merchants.util.obj.Merchant;
-import me.randomhashtags.merchants.util.obj.MerchantItem;
 import me.randomhashtags.merchants.util.supported.FactionsAPI;
 import me.randomhashtags.merchants.util.supported.economy.Vault;
 import me.randomhashtags.merchants.util.universal.UInventory;
@@ -37,11 +39,7 @@ import org.bukkit.inventory.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 
 import static java.io.File.separator;
@@ -54,58 +52,42 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         return instance;
     }
 
-    private HashMap<Player, String> previousShop;
+    private HashMap<Player, Merchant> previousShop;
     private HashMap<Player, MerchantItem> isPurchasing, isSelling;
 
     private final FactionsAPI fapi = FactionsAPI.getFactionsAPI();
 
-    public File dataF;
-    public YamlConfiguration data;
-
-    public final YamlConfiguration shops = YamlConfiguration.loadConfiguration(new File(dataFolder + separator + "shops.yml"));
+    private File dataF;
+    public YamlConfiguration data, shops;
     private final FileConfiguration config = merchants.getConfig();
     private UInventory purchaseInv, sellInv;
     private ItemStack purchaseCancel, purchaseOne, purchaseStack, purchaseInventory, sellCancel, sellOne, sellStack, sellInventory;
 
-    private HashMap<Integer, List<Integer>> bTypeSlots, sTypeSlots;
     private List<Integer> purchaseDisplayItem, sellDisplayItem;
-    public HashMap<String, UInventory> customInventories;
-    public HashMap<String, HashMap<Integer, String>> opens;
-    public HashMap<String, HashMap<Integer, ItemStack>> purchases;
 
-    private HashMap<String, Merchant> merchantz = new HashMap<>();
+    private HashMap<String, Merchant> merchantCommandIds;
+    private HashMap<UUID, Merchant> livingMerchants;
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void playerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
         final Player player = event.getPlayer();
-        final String m = event.getMessage().substring(1);
-        for(String s : config.getConfigurationSection("commands").getKeys(false)) {
-            final Merchant merchant = Merchant.valueOf(s);
-            if(merchant != null) {
-                final String cmdp = merchant.getCommandPermission(), tl = m.toLowerCase();
-                if(tl.equals(s)) {
-                    if(merchant.isAccessibleFromCMD() && (cmdp == null || player.hasPermission(cmdp))) {
-                        if(!config.getBoolean("commands." + s + ".cmd")) {
-                            return;
-                        }
-                        event.setCancelled(true);
-                        viewInventory(player, config.getString("commands." + s + ".opens"));
-                    }
-                    return;
-                } else if(tl.startsWith(s + " spawn ") && (cmdp == null || player.hasPermission(config.getString("commands." + s + ".permission") + ".spawn"))) {
-                    event.setCancelled(true);
-                    if(citizens) {
-                        final int y = (s + " spawn ").length();
-                        final Merchant mer = Merchant.valueOf(s);
-                        if(mer != null) {
-                            mer.spawn(player.getLocation(), colorize(m.substring(y)));
-                        } else {
-                            player.sendMessage("[Merchants] That is not a valid Merchant path name!");
-                        }
-                    } else {
-                        player.sendMessage("[Merchants] You need the Citizens plugin installed to do this!");
-                    }
-                    return;
+        final String m = event.getMessage().substring(1), tl = m.toLowerCase(), target = tl.split(" ")[0];
+        final Merchant merchant = merchantCommandIds.getOrDefault(target, null);
+        if(merchant != null) {
+            event.setCancelled(true);
+            final String cmdp = merchant.getCommandPermission();
+            if(tl.equals(m)) {
+                if(merchant.isAccessibleFromCommand() && (cmdp == null || player.hasPermission(cmdp))) {
+                    viewInventory(player, merchant);
+                } else {
+                    player.sendMessage("[Merchants] This Merchant is not accessible from its command!");
+                }
+            } else if(tl.startsWith(m + " spawn ") && (cmdp == null || hasPermission(player, cmdp, false))) {
+                if(citizens) {
+                    final int y = (tl + " spawn ").length();
+                    merchant.spawn(player.getLocation(), colorize(m.substring(y)));
+                } else {
+                    player.sendMessage("[Merchants] You need the Citizens plugin installed to do this!");
                 }
             }
         }
@@ -127,7 +109,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                 sendStringListMessage(sender, Arrays.asList("&6[Merchants] &aVersion: &e" + ve), null);
             } else if(l == 1 && args[0].equals("reload")) {
                 merchants.reload();
-                sender.sendMessage(colorize("&6[Merchants] &aMerchants v" + ve + " reloaded."));
+                sender.sendMessage(colorize("&6[Merchants] &aMerchants &ev" + ve + " &areloaded."));
             }
         } else if(n.equals("sell") && player != null) {
             if(l == 0) {
@@ -163,58 +145,77 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         }
         try {
             data.set("living", null);
-            for(UUID u : Merchant.liveMerchants.keySet())
-                data.set("living." + u.toString(), Merchant.liveMerchants.get(u).getPath());
-            data.save(dataF);
-            dataF = new File(dataFolder + separator + "_data.yml");
+            for(UUID u : livingMerchants.keySet()) {
+                data.set("living." + u.toString(), livingMerchants.get(u).getIdentifier());
+            }
+            saveData();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public void loadMerchants() {
-        checkForUpdate();
-        save(null, "_data.yml");
-        File dataF = new File(dataFolder + separator, "_data.yml");
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(dataF);
-        if(data.getBoolean("save default shops")) {
-            data.set("save default shops", false);
-            try {
-                data.save(dataF);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            final String[] shops = new String[] {
-                    "BASE", "BREWING", "COLOR", "DECOR",
-                    "ELIXIR", "ELIXERS", "FARMING", "FISH",
-                    "HOPPER", "MISC", "MOB", "ORE", "POTIONS",
-                    "RAID"
-            };
-            for(String s : shops) {
-                save("shops", s + ".yml");
+
+    public Merchant getLivingMerchant(UUID uuid) {
+        return livingMerchants.getOrDefault(uuid, null);
+    }
+    public void despawn(UUID merchant) {
+        livingMerchants.remove(merchant);
+    }
+
+    private CustomPotion createCustomPotion(YamlConfiguration yml, String path) {
+        final boolean isSplash = yml.getBoolean(path + ".splash");
+        lore.clear();
+        final List<PotionEffect> effects = new ArrayList<>();
+        for(String p : yml.getStringList(path + ".potion")) {
+            final String P = p.toLowerCase();
+            if(P.startsWith("effects{")) {
+                for(String e : P.split("\\{")[1].split("}")[0].split(";")) {
+                    final String[] values = e.split(":");
+                    final PotionEffectType t = PotionEffectType.getByName(values[0].toUpperCase());
+                    final int lvl = Integer.parseInt(values[1]), duration = Integer.parseInt(values[2]);
+                    final PotionEffect pe = new PotionEffect(t, duration*20, lvl);
+                    int sec = duration, min = sec/60, hr = min/60;
+                    sec -= min*60;
+                    min -= hr*60;
+                    effects.add(pe);
+                    final String tn = t.getName().replace("INCREASE_DAMAGE", "STRENGTH").replace("FAST_DIGGING", "HASTE").replace("HEAL", "INSTANT_HEALTH").replace("HARM", "INSTANT_DAMAGE").replace("JUMP", "JUMP_BOOST").replace("SLOW", "SLOWNESS");
+                    String tnn = tn.contains("_") ? tn.replace("_", " ") : tn.substring(0, 1).toUpperCase() + tn.substring(1).toLowerCase();
+                    if(tnn.contains(" ")) {
+                        String f = tnn.split(" ")[0], l = tnn.split(" ")[1];
+                        f = f.substring(0, 1).toUpperCase() + f.substring(1).toLowerCase();
+                        l = l.substring(0, 1).toUpperCase() + l.substring(1).toLowerCase();
+                        tnn = f + " " + l;
+                    }
+                    final ChatColor c = tn.contains("HUNGER") || tn.contains("WEAKNESS") || tn.contains("POISON") || tn.contains("SLOW") || tn.contains("WITHER") || tn.contains("CONFUSION") ? ChatColor.RED : ChatColor.GRAY;
+                    final String time = !t.getName().equals("HEAL") && !t.getName().equals("HARM") ? " (" + (hr > 0 ? hr + ":" : "") + min + ":" + (sec < 10 ? "0" + sec : sec) + ")" : "";
+                    lore.add(c + tnn + " " + toRoman(lvl+1) + time);
+                }
+            } else {
+                lore.add(colorize(p));
             }
         }
-        save(null, "shops.yml");
-        final ConfigurationSection cs = data.getConfigurationSection("living");
-        final Set<String> set = cs != null ? cs.getKeys(false) : null;
-        if(set != null) {
-            for(String merchant : set) {
-                final Merchant m = Merchant.valueOf(data.getString("living." + merchant));
-                Merchant.liveMerchants.put(UUID.fromString(merchant), m);
+        String type = null;
+        for(PotionEffect b : effects) {
+            if(type == null || type.equals("AWKWARD")) {
+                type = potionToString(b.getType());
+                item = UMaterial.valueOf((isSplash ? "SPLASH_" : "") + "POTION_" + type).getItemStack();
             }
         }
+        itemMeta = item.getItemMeta();
+        itemMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        final String n = yml.getString(path + ".name");
+        if(n != null) {
+            itemMeta.setDisplayName(colorize(n));
+        }
+        itemMeta.setLore(lore); lore.clear();
+        item.setItemMeta(itemMeta);
+        return new CustomPotion(item.clone(), effects);
     }
     
     private void createMerchant(String cmd, List<String> notbuyable, List<String> notsellable, List<String> shoplore) {
         final Merchant merchant = new Merchant(cmd, config.getBoolean("commands." + cmd + ".cmd"), config.getString("commands." + cmd + ".command permission"), config.getString("commands." + cmd + ".npc permission"), config.getString("commands." + cmd + ".opens"), config.getBoolean("commands." + cmd + ".npc"));
         final String o = config.getString("commands." + cmd + ".opens");
-        if(!purchases.containsKey(o)) {
-            purchases.put(o, new HashMap<>());
-        }
-        if(!opens.containsKey(o)) {
-            opens.put(o, new HashMap<>());
-        }
         final YamlConfiguration yml = YamlConfiguration.loadConfiguration(new File(dataFolder + separator + "shops" + separator, o + ".yml"));
-        final UInventory ui = new UInventory(null, yml.getInt("size"), colorize(yml.getString("title")));
+        final UInventory ui = new UInventory(null, yml.getInt("size", 9), colorize(yml.getString("title")));
         final Inventory i = ui.getInventory();
         for(String s : yml.getConfigurationSection("items").getKeys(false)) {
             if(!s.equals("title") && !s.equals("size")) {
@@ -222,59 +223,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                 final String prices = yml.getString("items." + s + ".prices");
                 item = d(yml, "items." + s);
                 if(item == null && yml.get("items." + s + ".potion") != null) {
-                    final boolean isSplash = yml.getBoolean("items." + s + ".splash");
-                    lore.clear();
-                    final List<PotionEffect> effects = new ArrayList<>();
-                    for(String p : yml.getStringList("items." + s + ".potion")) {
-                        final String P = p.toLowerCase();
-                        if(P.startsWith("effects{")) {
-                            for(String e : P.split("\\{")[1].split("}")[0].split(";")) {
-                                final String[] values = e.split(":");
-                                final PotionEffectType t = PotionEffectType.getByName(values[0].toUpperCase());
-                                final int lvl = Integer.parseInt(values[1]), duration = Integer.parseInt(values[2]);
-                                final PotionEffect pe = new PotionEffect(t, duration*20, lvl);
-                                int sec = duration, min = sec/60, hr = min/60;
-                                sec -= min*60;
-                                min -= hr*60;
-                                effects.add(pe);
-                                final String tn = t.getName().replace("INCREASE_DAMAGE", "STRENGTH").replace("FAST_DIGGING", "HASTE").replace("HEAL", "INSTANT_HEALTH").replace("HARM", "INSTANT_DAMAGE").replace("JUMP", "JUMP_BOOST").replace("SLOW", "SLOWNESS");
-                                String tnn = tn.contains("_") ? tn.replace("_", " ") : tn.substring(0, 1).toUpperCase() + tn.substring(1).toLowerCase();
-                                if(tnn.contains(" ")) {
-                                    String f = tnn.split(" ")[0], l = tnn.split(" ")[1];
-                                    f = f.substring(0, 1).toUpperCase() + f.substring(1).toLowerCase();
-                                    l = l.substring(0, 1).toUpperCase() + l.substring(1).toLowerCase();
-                                    tnn = f + " " + l;
-                                }
-                                final ChatColor c = tn.contains("HUNGER") || tn.contains("WEAKNESS") || tn.contains("POISON") || tn.contains("SLOW") || tn.contains("WITHER") || tn.contains("CONFUSION") ? ChatColor.RED : ChatColor.GRAY;
-                                final String time = !t.getName().equals("HEAL") && !t.getName().equals("HARM") ? " (" + (hr > 0 ? hr + ":" : "") + min + ":" + (sec < 10 ? "0" + sec : sec) + ")" : "";
-                                lore.add(c + tnn + " " + toRoman(lvl+1) + time);
-                            }
-                        } else {
-                            lore.add(colorize(p));
-                        }
-                    }
-                    String type = null;
-                    for(PotionEffect b : effects) {
-                        if(type == null || type.equals("AWKWARD")) {
-                            type = potionToString(b.getType());
-                            item = UMaterial.valueOf((isSplash ? "SPLASH_" : "") + "POTION_" + type).getItemStack();
-                        }
-                    }
-                    itemMeta = item.getItemMeta();
-                    itemMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-                    final String n = yml.getString("items." + s + ".name");
-                    if(n != null) {
-                        itemMeta.setDisplayName(colorize(n));
-                    }
-                    itemMeta.setLore(lore); lore.clear();
-                    item.setItemMeta(itemMeta);
-                    final CustomPotion cp = new CustomPotion(item.clone(), effects);
-                }
-                final String op = yml.getString("items." + s + ".opens");
-                if(op == null || op.isEmpty()) {
-                    purchases.get(o).put(slot, item.clone());
-                } else {
-                    opens.get(o).put(slot, op);
+                    createCustomPotion(yml, "items." + s);
                 }
                 itemMeta = item.getItemMeta(); lore.clear();
                 if(itemMeta.hasLore()) {
@@ -313,21 +262,43 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                 new MerchantItem(o, s, slot, op, bp, sp, item, purchase, yml.getStringList("items." + s + ".commands"));
             }
         }
-        customInventories.put(o, ui);
     }
 
+    private void saveData() {
+        try {
+            data.save(dataF);
+            data = YamlConfiguration.loadConfiguration(dataF);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public void load() {
+        checkForUpdate();
+        save(null, "_data.yml");
+        dataF = new File(dataFolder + separator, "_data.yml");
+        data = YamlConfiguration.loadConfiguration(dataF);
+        if(data.getBoolean("save default shops")) {
+            final String[] shops = new String[] {
+                    "BASE", "BREWING", "COLOR", "DECOR",
+                    "ELIXIR", "ELIXIRS", "ENCHANTER", "FARMING", "FISH",
+                    "HOPPER", "MISC", "MOB", "ORE", "POTIONS",
+                    "RAID"
+            };
+            for(String s : shops) {
+                save("shops", s + ".yml");
+            }
+            data.set("save default shops", false);
+            saveData();
+        }
+
+        save(null, "shops.yml");
+        shops = YamlConfiguration.loadConfiguration(new File(dataFolder + separator, "shops.yml"));
+
         citizens = pluginmanager.isPluginEnabled("Citizens");
         previousShop = new HashMap<>();
         isPurchasing = new HashMap<>();
         isSelling = new HashMap<>();
 
-        customInventories = new HashMap<>();
-        opens = new HashMap<>();
-        purchases = new HashMap<>();
-
-        bTypeSlots = new HashMap<>();
-        sTypeSlots = new HashMap<>();
         purchaseDisplayItem = new ArrayList<>();
         sellDisplayItem = new ArrayList<>();
 
@@ -376,11 +347,21 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         }
         final List<String> notbuyable = colorizeListString(shops.getStringList("lores.not buyable")), notsellable = colorizeListString(shops.getStringList("lores.not sellable")), shoplore = colorizeListString(shops.getStringList("lores.shop lore"));
 
+        merchantCommandIds = new HashMap<>();
+        livingMerchants = new HashMap<>();
         for(File f : new File(dataFolder + separator + "shops").listFiles()) {
-            new FileMerchant(f);
+            final Merchant m = new FileMerchant(f);
+            merchantCommandIds.put(m.getCommand(), m);
         }
-        
-        loadMerchants();
+
+        final ConfigurationSection cs = data.getConfigurationSection("living");
+        final Set<String> set = cs != null ? cs.getKeys(false) : null;
+        if(set != null) {
+            for(String merchant : set) {
+                final Merchant m = MerchantStorage.getMerchant(data.getString("living." + merchant));
+                livingMerchants.put(UUID.fromString(merchant), m);
+            }
+        }
     }
     public void unload() {
         saveMerchants();
@@ -420,12 +401,13 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                 final HashMap<String, String> replacements = new HashMap<>();
 
                 final MerchantItem mi = (isBuying ? isPurchasing : isSelling).get(player);
-                final String O = mi.opens;
-                if(O != null) {
-                    viewInventory(player, O.equals("PREVIOUS_SHOP") ? previousShop.getOrDefault(player, O) : O);
+                final String opensMerchant = mi.getOpensMerchant();
+                if(opensMerchant != null) {
+                    final Merchant target = MerchantStorage.getMerchant(opensMerchant);
+                    viewInventory(player, opensMerchant.equals("PREVIOUS_SHOP") ? previousShop.getOrDefault(player, target) : target);
                     return;
                 }
-                ItemStack i = mi.getPurchase();
+                ItemStack i = mi.getPurchased();
                 final PlayerInventory playerInv = player.getInventory();
                 int max = 0, inv = 0;
                 if(i != null) {
@@ -433,7 +415,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                     inv = isBuying ? getAvailableAmount(playerInv, i) : getAmount(playerInv, i);
                 }
                 final int amount = (isBuying ? bTypeSlots : sTypeSlots).get(1).contains(r) ? 1 : (isBuying ? bTypeSlots : sTypeSlots).get(2).contains(r) ? max : (isBuying ? bTypeSlots : sTypeSlots).get(3).contains(r) ? inv : 0;;
-                final double p = isBuying ? mi.buyPrice : mi.sellPrice, cost = round(p*amount, 2);
+                final double p = (isBuying ? mi.getBuyPrice() : mi.getSellPrice()).doubleValue(), cost = round(p*amount, 2);
                 replacements.put("{BUY}", Double.toString(p));
                 replacements.put("{SELL}", Double.toString(p));
                 replacements.put("{AMOUNT}", Integer.toString(amount));
@@ -445,14 +427,13 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                         message = config.getStringList("messages.purchase cancelled");
                     } else if(Vault.economy.withdrawPlayer(player, cost).transactionSuccess()) {
                         closeInv = closeInvUponSuccessfulPurchase;
-                        final List<String> cmds = mi.executedCommands;
-                        final CommandSender cs = Bukkit.getConsoleSender();
+                        final List<String> cmds = mi.getExecutedCommands();
                         final String n = player.getName();
                         if(cmds != null && !cmds.isEmpty()) {
                             message = config.getStringList("messages.purchase success commands");
                             for(int z = 1; z <= amount; z++) {
                                 for(String s : cmds) {
-                                    server.dispatchCommand(cs, s.replaceFirst("/", "").replace("{PLAYER}", n));
+                                    server.dispatchCommand(console, s.replaceFirst("/", "").replace("{PLAYER}", n));
                                 }
                             }
                         } else if(i != null) {
@@ -479,18 +460,19 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                 if(closeInv) player.closeInventory();
                 sendStringListMessage(player, message, replacements);
             } else {
-                final String t = event.getView().getTitle(), merchant = getMerchant(t);
+                final String t = event.getView().getTitle();
+                final Merchant merchant = getMerchant(t);
                 if(merchant != null) {
                     event.setCancelled(true);
                     player.updateInventory();
                     final String c = event.getClick().name();
                     if(r < 0 || r >= top.getSize() || !c.contains("LEFT") && !c.contains("RIGHT") || current == null || current.getType().equals(Material.AIR)) return;
-                    final String previous = previousShop.getOrDefault(player, null);
+                    final Merchant previous = previousShop.getOrDefault(player, null);
                     player.closeInventory();
-                    final HashMap<Integer, String> o = opens.get(merchant);
-                    if(o.containsKey(r)) {
-                        final String target = o.get(r);
-                        viewInventory(player, target.equals("PREVIOUS_SHOP") ? previous : target);
+                    final HashMap<Integer, MerchantItem> merchantItems = merchant.getPages().get(1);
+                    final String target = merchantItems.get(r).getOpensMerchant();
+                    if(target != null) {
+                        viewInventory(player, target.equals("PREVIOUS_SHOP") ? previous : MerchantStorage.getMerchant(target));
                     } else {
                         final MerchantItem mi = MerchantItem.valueOf(merchant, r);
                         if(c.contains("LEFT")) {
@@ -504,10 +486,10 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
             }
         }
     }
-    private String getMerchant(String title) {
-        for(String s : customInventories.keySet()) {
-            if(customInventories.get(s).getTitle().equals(title)) {
-                return s;
+    private Merchant getMerchant(@NotNull String title) {
+        for(Merchant m : MerchantStorage.MERCHANTS.values()) {
+            if(m.getInventory().getTitle().equals(title)) {
+                return m;
             }
         }
         return null;
@@ -552,7 +534,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
     }
 
     public void openPurchaseView(Player player, MerchantItem mi) {
-        if(mi.buyPrice > 0.00) {
+        if(mi.getBuyPrice().doubleValue() > 0.00) {
             open(player, mi, OpenType.BUYING);
             isPurchasing.put(player, mi);
         } else {
@@ -560,7 +542,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         }
     }
     public void openSellView(Player player, MerchantItem mi) {
-        if(mi.sellPrice > 0.00) {
+        if(mi.getSellPrice().doubleValue() > 0.00) {
             open(player, mi, OpenType.SELLING);
             isSelling.put(player, mi);
         } else {
@@ -574,7 +556,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         final HashMap<Integer, List<Integer>> typeslots = isBuying ? bTypeSlots : sTypeSlots;
         final List<Integer> displayitems = isBuying ? purchaseDisplayItem : sellDisplayItem;
         player.closeInventory();
-        final ItemStack i = mi.getPurchase();
+        final ItemStack i = mi.getPurchased();
         player.openInventory(Bukkit.createInventory(player, inventory.getSize(), inventory.getTitle().replace("{ITEM}", i.getType().name())));
         final Inventory top = player.getOpenInventory().getTopInventory();
         top.setContents(inve.getContents());
@@ -583,7 +565,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
             top.setItem(o, i);
         }
 
-        final double p = isBuying ? mi.buyPrice : mi.sellPrice;
+        final double p = (isBuying ? mi.getBuyPrice() : mi.getSellPrice()).doubleValue();
         final PlayerInventory PI = player.getInventory();
         final int stack = i.getMaxStackSize(), inv = isBuying ? getAvailableAmount(PI, i) : getAmount(PI, i);
         final String stackString = Integer.toString(stack), invString = Integer.toString(inv);
@@ -603,14 +585,12 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         player.updateInventory();
     }
 
-    public void viewInventory(Player player, String key) {
-        if(customInventories.containsKey(key)) {
-            player.closeInventory();
-            final UInventory i = customInventories.get(key);
-            player.openInventory(Bukkit.createInventory(player, i.getSize(), i.getTitle()));
-            player.getOpenInventory().getTopInventory().setContents(i.getInventory().getContents());
-            player.updateInventory();
-        }
+    public void viewInventory(@NotNull Player player, @NotNull Merchant merchant) {
+        player.closeInventory();
+        final UInventory i = merchant.getInventory();
+        player.openInventory(Bukkit.createInventory(player, i.getSize(), i.getTitle()));
+        player.getOpenInventory().getTopInventory().setContents(i.getInventory().getContents());
+        player.updateInventory();
     }
 
     private void sellchest(Player player, Inventory inv, String[] type) {
@@ -620,7 +600,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
             final ItemStack is = inv.getItem(i);
             if(is != null && !is.getType().equals(Material.AIR)) {
                 final MerchantItem m = MerchantItem.valueOf(is);
-                final double sp = m != null ? m.sellPrice : 0.00;
+                final double sp = m != null ? m.getSellPrice().doubleValue() : 0.00;
                 final byte d = is.getData().getData();
                 final String mat = type != null ? type[0].toUpperCase() : null, ism = is.getType().name();
                 final UMaterial um = UMaterial.match(is);
@@ -639,7 +619,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         for(UMaterial m : amounts.keySet()) {
             final int amount = amounts.get(m);
             final MerchantItem mi = MerchantItem.valueOf(m.getItemStack());
-            final double sp = mi.sellPrice;
+            final double sp = mi.getSellPrice().doubleValue();
             final double cost = round(amount*sp, 2);
             final HashMap<String, String> replacements = new HashMap<>();
             replacements.put("{SELL}", formatDouble(sp));
@@ -651,18 +631,17 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         }
     }
     public void sellItems(Player player, ItemStack i, boolean inventory) {
-        final FileConfiguration c = config;
         if(i == null || i.getType().equals(Material.AIR)) {
-            sendStringListMessage(player, c.getStringList("messages.need to be holding item"), null);
+            sendStringListMessage(player, config.getStringList("messages.need to be holding item"), null);
         } else {
             final MerchantItem m = MerchantItem.valueOf(i);
-            final List<String> msg = c.getStringList("messages.cannot sell item to server");
+            final List<String> msg = config.getStringList("messages.cannot sell item to server");
             if(m == null) {
                 sendStringListMessage(player, msg, null);
             } else {
-                final ItemStack is = m.getPurchase();
+                final ItemStack is = m.getPurchased();
                 final String it = is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : UMaterial.match(is).name();
-                final double s = m.sellPrice;
+                final double s = m.getSellPrice().doubleValue();
                 if(i.isSimilar(is)) {
                     final HashMap<String, String> replacements = new HashMap<>();
                     replacements.put("{ITEM}", it);
@@ -679,32 +658,12 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                     replacements.put("{COST}", formatDouble(total));
                     replacements.put("{AMOUNT}", formatInt(amount));
                     e.depositPlayer(player, total);
-                    sendStringListMessage(player, c.getStringList("messages.sell success"), replacements);
+                    sendStringListMessage(player, config.getStringList("messages.sell success"), replacements);
                     player.updateInventory();
                 } else {
                     sendStringListMessage(player, msg, null);
                 }
             }
-        }
-    }
-
-    private void checkForUpdate() {
-        try {
-            final URL checkURL = new URL("https://api.spigotmc.org/legacy/update.php?resource=34855");
-            final URLConnection con = checkURL.openConnection();
-            final String v = merchants.getDescription().getVersion(), newVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
-            final boolean canUpdate = !v.equals(newVersion);
-            if(canUpdate) {
-                final String n = ChatColor.translateAlternateColorCodes('&', "&6[Merchants] &eUpdate available! &aYour version: &f" + v + "&a. Latest version: &f" + newVersion);
-                for(Player p : Bukkit.getOnlinePlayers()) {
-                    if(p.isOp() || p.hasPermission("Merchants.updater.notify")) {
-                        p.sendMessage(n);
-                    }
-                }
-                console.sendMessage(n);
-            }
-        } catch (Exception e) {
-            console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Merchants] &aCould not check for updates due to being unable to connect to SpigotMC!"));
         }
     }
 }

@@ -8,12 +8,17 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -168,4 +173,24 @@ public interface UVersionable extends Versionable {
         return i;
     }
     default String colorize(String input) { return input != null ? ChatColor.translateAlternateColorCodes('&', input) : ""; }
+
+    default void checkForUpdate() {
+        try {
+            final URL checkURL = new URL("https://api.spigotmc.org/legacy/update.php?resource=34855");
+            final URLConnection con = checkURL.openConnection();
+            final String v = merchants.getDescription().getVersion(), newVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
+            final boolean canUpdate = !v.equals(newVersion);
+            if(canUpdate) {
+                final String n = colorize("&6[Merchants] &eUpdate available! &aYour version: &f" + v + "&a. Latest version: &f" + newVersion);
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    if(p.isOp() || p.hasPermission("Merchants.updater.notify")) {
+                        p.sendMessage(n);
+                    }
+                }
+                console.sendMessage(n);
+            }
+        } catch (Exception e) {
+            console.sendMessage(colorize("&6[Merchants] &aCould not check for updates due to being unable to connect to SpigotMC!"));
+        }
+    }
 }

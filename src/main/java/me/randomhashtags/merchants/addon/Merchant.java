@@ -2,6 +2,7 @@ package me.randomhashtags.merchants.addon;
 
 import me.randomhashtags.merchants.addon.util.Identifiable;
 import me.randomhashtags.merchants.util.universal.UInventory;
+import org.bukkit.Location;
 
 import java.util.HashMap;
 
@@ -14,5 +15,9 @@ public interface Merchant extends Identifiable {
     String getNPCPermission();
 
     UInventory getInventory();
-    HashMap<Integer, MerchantItem[]> getPages();
+    HashMap<Integer, HashMap<Integer, MerchantItem>> getPages();
+
+    default void spawn(Location l, String name) {
+        // TODO: complete dis bruv
+    }
 }

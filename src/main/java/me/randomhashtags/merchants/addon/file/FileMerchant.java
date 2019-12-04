@@ -1,27 +1,35 @@
-package me.randomhashtags.merchants.addon;
+package me.randomhashtags.merchants.addon.file;
 
+import me.randomhashtags.merchants.addon.Merchant;
+import me.randomhashtags.merchants.addon.MerchantAddon;
+import me.randomhashtags.merchants.addon.MerchantItem;
+import me.randomhashtags.merchants.addon.obj.MerchantItemObj;
 import me.randomhashtags.merchants.util.MerchantStorage;
 import me.randomhashtags.merchants.util.universal.UInventory;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.HashMap;
 
+import static me.randomhashtags.merchants.MerchantsAPI.getAPI;
+
 public class FileMerchant extends MerchantAddon implements Merchant {
-    private File f;
     private String cmd;
     private UInventory inv;
-    private HashMap<Integer, MerchantItem[]> pages;
+    private HashMap<Integer, HashMap<Integer, MerchantItem>> pages;
 
     private HashMap<String, Boolean> accessibility;
     private HashMap<String, String> perms;
 
     public FileMerchant(File f) {
-        this.f = f;
+        load(f);
         reload();
         MerchantStorage.register(this);
     }
     public void reload() {
-        load(f);
         cmd = null;
         inv = null;
         pages = null;
@@ -55,9 +63,23 @@ public class FileMerchant extends MerchantAddon implements Merchant {
         return inv;
     }
 
-    public HashMap<Integer, MerchantItem[]> getPages() {
+    public HashMap<Integer, HashMap<Integer, MerchantItem>> getPages() {
         if(pages == null) {
+            final Inventory inv = getInventory().getInventory();
             pages = new HashMap<>();
+            pages.put(1, new HashMap<>());
+            int page = 1;
+            for(String key : yml.getConfigurationSection("items").getKeys(false)) {
+                final String p = "items." + key + ".", opens = yml.getString(p + "opens", null);
+                final int slot = yml.getInt(p + "slot");
+                final String[] prices = yml.getString("items." + key + ".prices").split(";");
+                final ItemStack item = getAPI().d(yml, p), customPurchase = getAPI().d(yml, p + "purchase");
+                final MerchantItem merchantItem = new MerchantItemObj(key, slot, opens, BigDecimal.valueOf(Double.parseDouble(prices[0])), BigDecimal.valueOf(Double.parseDouble(prices[1])), item, customPurchase, yml.getStringList(p + "commands"));
+                pages.get(page).put(page, merchantItem);
+
+                final ItemMeta meta = item.getItemMeta();
+                inv.setItem(slot, item);
+            }
         }
         return pages;
     }

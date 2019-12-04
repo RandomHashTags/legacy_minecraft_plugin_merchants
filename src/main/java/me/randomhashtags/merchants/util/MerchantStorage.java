@@ -5,7 +5,7 @@ import me.randomhashtags.merchants.addon.Merchant;
 import java.util.HashMap;
 
 public abstract class MerchantStorage {
-    private static HashMap<String, Merchant> MERCHANTS = new HashMap<>();
+    public static HashMap<String, Merchant> MERCHANTS = new HashMap<>();
     public static void register(Merchant merchant) {
         if(merchant != null) {
             MERCHANTS.put(merchant.getIdentifier(), merchant);
