@@ -73,8 +73,9 @@ public class FileMerchant extends MerchantAddon implements Merchant {
                 final String p = "items." + key + ".", opens = yml.getString(p + "opens", null);
                 final int slot = yml.getInt(p + "slot");
                 final String[] prices = yml.getString("items." + key + ".prices").split(";");
+                final BigDecimal buyPrice = BigDecimal.valueOf(Double.parseDouble(prices[0])), sellPrice = BigDecimal.valueOf(Double.parseDouble(prices[1]));
                 final ItemStack item = getAPI().d(yml, p), customPurchase = getAPI().d(yml, p + "purchase");
-                final MerchantItem merchantItem = new MerchantItemObj(key, slot, opens, BigDecimal.valueOf(Double.parseDouble(prices[0])), BigDecimal.valueOf(Double.parseDouble(prices[1])), item, customPurchase, yml.getStringList(p + "commands"));
+                final MerchantItem merchantItem = new MerchantItemObj(key, slot, opens, buyPrice, sellPrice, item, customPurchase, yml.getStringList(p + "commands"));
                 pages.get(page).put(page, merchantItem);
 
                 final ItemMeta meta = item.getItemMeta();

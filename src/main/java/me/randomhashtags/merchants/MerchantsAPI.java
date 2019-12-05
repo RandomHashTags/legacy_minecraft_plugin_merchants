@@ -12,9 +12,7 @@ import me.randomhashtags.merchants.util.supported.FactionsAPI;
 import me.randomhashtags.merchants.util.supported.economy.Vault;
 import me.randomhashtags.merchants.util.universal.UInventory;
 import me.randomhashtags.merchants.util.universal.UMaterial;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -37,7 +35,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.util.*;
@@ -45,12 +42,13 @@ import java.util.*;
 import static java.io.File.separator;
 
 public class MerchantsAPI extends MFeature implements Listener, CommandExecutor {
-    private boolean citizens = false, closeInvUponSuccessfulPurchase = true, closeInvUponSuccessfulSell = true;
     private static MerchantsAPI instance;
     public static MerchantsAPI getAPI() {
         if(instance == null) instance = new MerchantsAPI();
         return instance;
     }
+
+    private boolean citizens = false, closeInvUponSuccessfulPurchase = true, closeInvUponSuccessfulSell = true;
 
     private HashMap<Player, Merchant> previousShop;
     private HashMap<Player, MerchantItem> isPurchasing, isSelling;
@@ -65,6 +63,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
 
     private List<Integer> purchaseDisplayItem, sellDisplayItem;
 
+    private HashMap<Integer, List<Integer>> buyAmountSlots, sellAmountSlots;
     private HashMap<String, Merchant> merchantCommandIds;
     private HashMap<UUID, Merchant> livingMerchants;
 
@@ -161,109 +160,6 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         livingMerchants.remove(merchant);
     }
 
-    private CustomPotion createCustomPotion(YamlConfiguration yml, String path) {
-        final boolean isSplash = yml.getBoolean(path + ".splash");
-        lore.clear();
-        final List<PotionEffect> effects = new ArrayList<>();
-        for(String p : yml.getStringList(path + ".potion")) {
-            final String P = p.toLowerCase();
-            if(P.startsWith("effects{")) {
-                for(String e : P.split("\\{")[1].split("}")[0].split(";")) {
-                    final String[] values = e.split(":");
-                    final PotionEffectType t = PotionEffectType.getByName(values[0].toUpperCase());
-                    final int lvl = Integer.parseInt(values[1]), duration = Integer.parseInt(values[2]);
-                    final PotionEffect pe = new PotionEffect(t, duration*20, lvl);
-                    int sec = duration, min = sec/60, hr = min/60;
-                    sec -= min*60;
-                    min -= hr*60;
-                    effects.add(pe);
-                    final String tn = t.getName().replace("INCREASE_DAMAGE", "STRENGTH").replace("FAST_DIGGING", "HASTE").replace("HEAL", "INSTANT_HEALTH").replace("HARM", "INSTANT_DAMAGE").replace("JUMP", "JUMP_BOOST").replace("SLOW", "SLOWNESS");
-                    String tnn = tn.contains("_") ? tn.replace("_", " ") : tn.substring(0, 1).toUpperCase() + tn.substring(1).toLowerCase();
-                    if(tnn.contains(" ")) {
-                        String f = tnn.split(" ")[0], l = tnn.split(" ")[1];
-                        f = f.substring(0, 1).toUpperCase() + f.substring(1).toLowerCase();
-                        l = l.substring(0, 1).toUpperCase() + l.substring(1).toLowerCase();
-                        tnn = f + " " + l;
-                    }
-                    final ChatColor c = tn.contains("HUNGER") || tn.contains("WEAKNESS") || tn.contains("POISON") || tn.contains("SLOW") || tn.contains("WITHER") || tn.contains("CONFUSION") ? ChatColor.RED : ChatColor.GRAY;
-                    final String time = !t.getName().equals("HEAL") && !t.getName().equals("HARM") ? " (" + (hr > 0 ? hr + ":" : "") + min + ":" + (sec < 10 ? "0" + sec : sec) + ")" : "";
-                    lore.add(c + tnn + " " + toRoman(lvl+1) + time);
-                }
-            } else {
-                lore.add(colorize(p));
-            }
-        }
-        String type = null;
-        for(PotionEffect b : effects) {
-            if(type == null || type.equals("AWKWARD")) {
-                type = potionToString(b.getType());
-                item = UMaterial.valueOf((isSplash ? "SPLASH_" : "") + "POTION_" + type).getItemStack();
-            }
-        }
-        itemMeta = item.getItemMeta();
-        itemMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-        final String n = yml.getString(path + ".name");
-        if(n != null) {
-            itemMeta.setDisplayName(colorize(n));
-        }
-        itemMeta.setLore(lore); lore.clear();
-        item.setItemMeta(itemMeta);
-        return new CustomPotion(item.clone(), effects);
-    }
-    
-    private void createMerchant(String cmd, List<String> notbuyable, List<String> notsellable, List<String> shoplore) {
-        final Merchant merchant = new Merchant(cmd, config.getBoolean("commands." + cmd + ".cmd"), config.getString("commands." + cmd + ".command permission"), config.getString("commands." + cmd + ".npc permission"), config.getString("commands." + cmd + ".opens"), config.getBoolean("commands." + cmd + ".npc"));
-        final String o = config.getString("commands." + cmd + ".opens");
-        final YamlConfiguration yml = YamlConfiguration.loadConfiguration(new File(dataFolder + separator + "shops" + separator, o + ".yml"));
-        final UInventory ui = new UInventory(null, yml.getInt("size", 9), colorize(yml.getString("title")));
-        final Inventory i = ui.getInventory();
-        for(String s : yml.getConfigurationSection("items").getKeys(false)) {
-            if(!s.equals("title") && !s.equals("size")) {
-                final int slot = yml.getInt("items." + s + ".slot");
-                final String prices = yml.getString("items." + s + ".prices");
-                item = d(yml, "items." + s);
-                if(item == null && yml.get("items." + s + ".potion") != null) {
-                    createCustomPotion(yml, "items." + s);
-                }
-                itemMeta = item.getItemMeta(); lore.clear();
-                if(itemMeta.hasLore()) {
-                    lore.addAll(itemMeta.getLore());
-                }
-                double bp = 0.00, sp = 0.00;
-                if(op == null && prices != null) {
-                    final String[] values = prices.split(";");
-                    bp = Double.parseDouble(values[0]);
-                    sp = Double.parseDouble(values[1]);
-                    for(String l : shoplore) {
-                        final boolean isBuy = l.contains("{BUY}"), isSell = l.contains("{SELL}");
-                        if(isBuy) {
-                            if(bp <= 0.00) {
-                                lore.addAll(notbuyable);
-                            } else {
-                                l = l.replace("{BUY}", Double.toString(bp));
-                            }
-                        }
-                        if(isSell) {
-                            if(sp <= 0.00) {
-                                lore.addAll(notsellable);
-                            } else {
-                                l = l.replace("{SELL}", Double.toString(sp));
-                            }
-                        }
-                        if(!isBuy && !isSell) {
-                            lore.add(colorize(l));
-                        }
-                    }
-                }
-                itemMeta.setLore(lore); lore.clear();
-                item.setItemMeta(itemMeta);
-                i.setItem(slot, item);
-                final ItemStack purchase = shops.get("items." + s + ".purchase") == null ? purchases.get(o).get(slot) : d(shops, "items." + s + ".purchase");
-                new MerchantItem(o, s, slot, op, bp, sp, item, purchase, yml.getStringList("items." + s + ".commands"));
-            }
-        }
-    }
-
     private void saveData() {
         try {
             data.save(dataF);
@@ -317,12 +213,15 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         sellStack = d(shops, "sell.stack");
         sellInventory = d(shops, "sell.inventory");
 
+        buyAmountSlots = new HashMap<>();
+        sellAmountSlots = new HashMap<>();
+
         for(int i = 1; i <= 2; i++) {
             final boolean isPurchase = i == 1;
             final String type = isPurchase ? "purchase" : "sell";
             final Inventory inventory = (isPurchase ? purchaseInv : sellInv).getInventory();
             final ItemStack cancel = isPurchase ? purchaseCancel : sellCancel, one = isPurchase ? purchaseOne : sellOne, stack = isPurchase ? purchaseStack : sellStack, inv = isPurchase ? purchaseInventory : sellInventory;
-            final HashMap<Integer, List<Integer>> h = isPurchase ? bTypeSlots : sTypeSlots;
+            final HashMap<Integer, List<Integer>> h = isPurchase ? buyAmountSlots : sellAmountSlots;
             final List<Integer> displayitems = isPurchase ? purchaseDisplayItem : sellDisplayItem;
             for(String s : shops.getConfigurationSection(type).getKeys(false)) {
                 if(!s.equals("title") && !s.equals("size") && !s.equals("cancel") && !s.equals("one") && !s.equals("stack") && !s.equals("inventory")) {
@@ -414,7 +313,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                     max = i.getMaxStackSize();
                     inv = isBuying ? getAvailableAmount(playerInv, i) : getAmount(playerInv, i);
                 }
-                final int amount = (isBuying ? bTypeSlots : sTypeSlots).get(1).contains(r) ? 1 : (isBuying ? bTypeSlots : sTypeSlots).get(2).contains(r) ? max : (isBuying ? bTypeSlots : sTypeSlots).get(3).contains(r) ? inv : 0;;
+                final int amount = (isBuying ? buyAmountSlots : sellAmountSlots).get(1).contains(r) ? 1 : (isBuying ? buyAmountSlots : sellAmountSlots).get(2).contains(r) ? max : (isBuying ? buyAmountSlots : sellAmountSlots).get(3).contains(r) ? inv : 0;;
                 final double p = (isBuying ? mi.getBuyPrice() : mi.getSellPrice()).doubleValue(), cost = round(p*amount, 2);
                 replacements.put("{BUY}", Double.toString(p));
                 replacements.put("{SELL}", Double.toString(p));
@@ -470,11 +369,11 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                     final Merchant previous = previousShop.getOrDefault(player, null);
                     player.closeInventory();
                     final HashMap<Integer, MerchantItem> merchantItems = merchant.getPages().get(1);
-                    final String target = merchantItems.get(r).getOpensMerchant();
+                    final MerchantItem mi = merchantItems.get(r);
+                    final String target = mi.getOpensMerchant();
                     if(target != null) {
                         viewInventory(player, target.equals("PREVIOUS_SHOP") ? previous : MerchantStorage.getMerchant(target));
                     } else {
-                        final MerchantItem mi = MerchantItem.valueOf(merchant, r);
                         if(c.contains("LEFT")) {
                             openPurchaseView(player, mi);
                         } else {
@@ -553,7 +452,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         final boolean isBuying = type.equals(OpenType.BUYING);
         final UInventory inventory = isBuying ? purchaseInv : sellInv;
         final Inventory inve = inventory.getInventory();
-        final HashMap<Integer, List<Integer>> typeslots = isBuying ? bTypeSlots : sTypeSlots;
+        final HashMap<Integer, List<Integer>> typeslots = isBuying ? buyAmountSlots : sellAmountSlots;
         final List<Integer> displayitems = isBuying ? purchaseDisplayItem : sellDisplayItem;
         player.closeInventory();
         final ItemStack i = mi.getPurchased();
@@ -594,7 +493,6 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
     }
 
     private void sellchest(Player player, Inventory inv, String[] type) {
-        final Economy eco = Vault.economy;
         final HashMap<UMaterial, Integer> amounts = new HashMap<>();
         for(int i = 0; i < inv.getSize(); i++) {
             final ItemStack is = inv.getItem(i);
@@ -626,7 +524,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
             replacements.put("{AMOUNT}", formatInt(amount));
             replacements.put("{COST}", formatDouble(cost));
             replacements.put("{ITEM}", m.name());
-            eco.depositPlayer(player, cost);
+            Vault.economy.depositPlayer(player, cost);
             sendStringListMessage(player, config.getStringList("messages.sell success"), replacements);
         }
     }
@@ -645,7 +543,6 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                 if(i.isSimilar(is)) {
                     final HashMap<String, String> replacements = new HashMap<>();
                     replacements.put("{ITEM}", it);
-                    final Economy e = Vault.economy;
                     final int amount;
                     if(inventory) {
                         amount = getAmount(player.getInventory(), is);
@@ -657,7 +554,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
                     final double total = amount*s;
                     replacements.put("{COST}", formatDouble(total));
                     replacements.put("{AMOUNT}", formatInt(amount));
-                    e.depositPlayer(player, total);
+                    Vault.economy.depositPlayer(player, total);
                     sendStringListMessage(player, config.getStringList("messages.sell success"), replacements);
                     player.updateInventory();
                 } else {
