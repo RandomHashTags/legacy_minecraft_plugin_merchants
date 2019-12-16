@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.util.supported;
+package me.randomhashtags.merchants.supported;
 
 public enum EconomyType {
     VAULT, TOKEN_MANAGER

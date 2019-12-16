@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.util.supported.regional;
+package me.randomhashtags.merchants.supported.regional;
 
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;

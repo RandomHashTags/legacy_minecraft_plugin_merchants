@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.util.supported.economy;
+package me.randomhashtags.merchants.supported.economy;
 
 import me.randomhashtags.merchants.util.MFeature;
 

@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.util.universal;
+package me.randomhashtags.merchants.universal;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

@@ -1,7 +1,7 @@
 package me.randomhashtags.merchants.addon;
 
 import me.randomhashtags.merchants.addon.util.Identifiable;
-import me.randomhashtags.merchants.util.universal.UInventory;
+import me.randomhashtags.merchants.universal.UInventory;
 import org.bukkit.Location;
 
 import java.util.HashMap;

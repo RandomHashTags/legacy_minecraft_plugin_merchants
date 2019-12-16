@@ -1,6 +1,6 @@
-package me.randomhashtags.merchants.util.supported;
+package me.randomhashtags.merchants.supported;
 
-import me.randomhashtags.merchants.util.universal.UVersionable;
+import me.randomhashtags.merchants.universal.UVersionable;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 

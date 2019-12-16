@@ -1,8 +1,8 @@
-package me.randomhashtags.merchants.util.supported;
+package me.randomhashtags.merchants.supported;
 
 import me.randomhashtags.merchants.util.MFeature;
-import me.randomhashtags.merchants.util.supported.economy.TokenManager;
-import me.randomhashtags.merchants.util.supported.economy.Vault;
+import me.randomhashtags.merchants.supported.economy.TokenManager;
+import me.randomhashtags.merchants.supported.economy.Vault;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 

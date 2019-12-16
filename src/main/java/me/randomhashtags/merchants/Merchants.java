@@ -1,7 +1,7 @@
 package me.randomhashtags.merchants;
 
-import me.randomhashtags.merchants.util.supported.CitizensEvents;
-import me.randomhashtags.merchants.util.supported.economy.Vault;
+import me.randomhashtags.merchants.supported.CitizensEvents;
+import me.randomhashtags.merchants.supported.economy.Vault;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;

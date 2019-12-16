@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.util.universal;
+package me.randomhashtags.merchants.universal;
 
 import me.randomhashtags.merchants.Merchants;
 import me.randomhashtags.merchants.util.Versionable;

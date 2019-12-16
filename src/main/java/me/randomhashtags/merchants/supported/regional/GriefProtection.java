@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.util.supported.regional;
+package me.randomhashtags.merchants.supported.regional;
 
 public class GriefProtection { // https://dev.bukkit.org/projects/grief-prevention/files
 }

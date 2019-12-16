@@ -5,13 +5,13 @@ import me.randomhashtags.merchants.addon.Merchant;
 import me.randomhashtags.merchants.addon.MerchantItem;
 import me.randomhashtags.merchants.addon.file.FileMerchant;
 import me.randomhashtags.merchants.addon.obj.CustomPotion;
+import me.randomhashtags.merchants.supported.FactionsAPI;
+import me.randomhashtags.merchants.supported.economy.Vault;
+import me.randomhashtags.merchants.universal.UInventory;
+import me.randomhashtags.merchants.universal.UMaterial;
 import me.randomhashtags.merchants.util.MFeature;
 import me.randomhashtags.merchants.util.MerchantStorage;
 import me.randomhashtags.merchants.util.OpenType;
-import me.randomhashtags.merchants.util.supported.FactionsAPI;
-import me.randomhashtags.merchants.util.supported.economy.Vault;
-import me.randomhashtags.merchants.util.universal.UInventory;
-import me.randomhashtags.merchants.util.universal.UMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -497,7 +497,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         for(int i = 0; i < inv.getSize(); i++) {
             final ItemStack is = inv.getItem(i);
             if(is != null && !is.getType().equals(Material.AIR)) {
-                final MerchantItem m = MerchantItem.valueOf(is);
+                final MerchantItem m = FileMerchant.valueOf(is);
                 final double sp = m != null ? m.getSellPrice().doubleValue() : 0.00;
                 final byte d = is.getData().getData();
                 final String mat = type != null ? type[0].toUpperCase() : null, ism = is.getType().name();
@@ -516,7 +516,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         }
         for(UMaterial m : amounts.keySet()) {
             final int amount = amounts.get(m);
-            final MerchantItem mi = MerchantItem.valueOf(m.getItemStack());
+            final MerchantItem mi = FileMerchant.valueOf(m.getItemStack());
             final double sp = mi.getSellPrice().doubleValue();
             final double cost = round(amount*sp, 2);
             final HashMap<String, String> replacements = new HashMap<>();
@@ -532,7 +532,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         if(i == null || i.getType().equals(Material.AIR)) {
             sendStringListMessage(player, config.getStringList("messages.need to be holding item"), null);
         } else {
-            final MerchantItem m = MerchantItem.valueOf(i);
+            final MerchantItem m = FileMerchant.valueOf(i);
             final List<String> msg = config.getStringList("messages.cannot sell item to server");
             if(m == null) {
                 sendStringListMessage(player, msg, null);

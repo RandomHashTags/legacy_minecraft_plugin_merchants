@@ -1,6 +1,6 @@
 package me.randomhashtags.merchants.addon;
 
-import me.randomhashtags.merchants.util.universal.UVersionable;
+import me.randomhashtags.merchants.universal.UVersionable;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

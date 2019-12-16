@@ -1,12 +1,11 @@
 package me.randomhashtags.merchants.util;
 
 import me.randomhashtags.merchants.addon.obj.CustomPotion;
-import me.randomhashtags.merchants.util.universal.UMaterial;
-import me.randomhashtags.merchants.util.universal.UVersion;
+import me.randomhashtags.merchants.universal.UMaterial;
+import me.randomhashtags.merchants.universal.UVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;

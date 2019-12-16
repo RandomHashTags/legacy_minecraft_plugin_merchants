@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.util.supported;
+package me.randomhashtags.merchants.supported;
 
 import me.randomhashtags.merchants.addon.Merchant;
 import me.randomhashtags.merchants.util.MFeature;

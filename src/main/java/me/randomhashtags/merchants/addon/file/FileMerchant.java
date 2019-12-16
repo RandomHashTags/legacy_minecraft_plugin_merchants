@@ -4,8 +4,10 @@ import me.randomhashtags.merchants.addon.Merchant;
 import me.randomhashtags.merchants.addon.MerchantAddon;
 import me.randomhashtags.merchants.addon.MerchantItem;
 import me.randomhashtags.merchants.addon.obj.MerchantItemObj;
+import me.randomhashtags.merchants.universal.UMaterial;
 import me.randomhashtags.merchants.util.MerchantStorage;
-import me.randomhashtags.merchants.util.universal.UInventory;
+import me.randomhashtags.merchants.universal.UInventory;
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,6 +19,7 @@ import java.util.HashMap;
 import static me.randomhashtags.merchants.MerchantsAPI.getAPI;
 
 public class FileMerchant extends MerchantAddon implements Merchant {
+    public static HashMap<UMaterial, MerchantItem> CACHE = new HashMap<>();
     private String cmd;
     private UInventory inv;
     private HashMap<Integer, HashMap<Integer, MerchantItem>> pages;
@@ -83,5 +86,25 @@ public class FileMerchant extends MerchantAddon implements Merchant {
             }
         }
         return pages;
+    }
+
+    public static MerchantItem valueOf(ItemStack is) {
+        if(is != null && !is.getType().equals(Material.AIR)) {
+            final UMaterial u = UMaterial.match(is);
+            if(CACHE.containsKey(u)) {
+                return CACHE.get(u);
+            }
+            for(Merchant m : MerchantStorage.MERCHANTS.values()) {
+                for(HashMap<Integer, MerchantItem> hashmap : m.getPages().values()) {
+                    for(MerchantItem item : hashmap.values()) {
+                        if(item.getItem().isSimilar(is)) {
+                            CACHE.put(u, item);
+                            return item;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

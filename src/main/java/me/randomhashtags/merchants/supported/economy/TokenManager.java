@@ -1,7 +1,7 @@
-package me.randomhashtags.merchants.util.supported.economy;
+package me.randomhashtags.merchants.supported.economy;
 
 import me.randomhashtags.merchants.util.MFeature;
-import me.randomhashtags.merchants.util.supported.Economical;
+import me.randomhashtags.merchants.supported.Economical;
 import me.realized.tokenmanager.TokenManagerPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

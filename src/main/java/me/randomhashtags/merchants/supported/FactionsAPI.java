@@ -1,6 +1,6 @@
-package me.randomhashtags.merchants.util.supported;
+package me.randomhashtags.merchants.supported;
 
-import me.randomhashtags.merchants.util.supported.regional.FactionsUUID;
+import me.randomhashtags.merchants.supported.regional.FactionsUUID;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
