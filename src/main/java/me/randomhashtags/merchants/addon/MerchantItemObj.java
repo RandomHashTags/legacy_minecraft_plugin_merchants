@@ -1,6 +1,5 @@
-package me.randomhashtags.merchants.addon.obj;
+package me.randomhashtags.merchants.addon;
 
-import me.randomhashtags.merchants.addon.MerchantItem;
 import org.bukkit.inventory.ItemStack;
 
 import java.math.BigDecimal;
@@ -22,12 +21,28 @@ public class MerchantItemObj implements MerchantItem {
         this.purchase = purchase;
         this.executedCommands = executedCommands;
     }
-    public String getIdentifier() { return identifier; }
-    public int getSlot() { return slot; }
-    public String getOpensMerchant() { return opens; }
-    public BigDecimal getBuyPrice() { return buyPrice; }
-    public BigDecimal getSellPrice() { return sellPrice; }
-    public ItemStack getItem() { return display.clone(); }
-    public ItemStack getPurchased() { return purchase != null ? purchase.clone() : null; }
-    public List<String> getExecutedCommands() { return executedCommands; }
+    public String getIdentifier() {
+        return identifier;
+    }
+    public int getSlot() {
+        return slot;
+    }
+    public String getOpensMerchant() {
+        return opens;
+    }
+    public BigDecimal getBuyPrice() {
+        return buyPrice;
+    }
+    public BigDecimal getSellPrice() {
+        return sellPrice;
+    }
+    public ItemStack getItem() {
+        return display.clone();
+    }
+    public ItemStack getPurchased() {
+        return purchase != null ? purchase.clone() : null;
+    }
+    public List<String> getExecutedCommands() {
+        return executedCommands;
+    }
 }

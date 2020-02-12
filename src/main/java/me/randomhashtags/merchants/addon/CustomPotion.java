@@ -1,4 +1,4 @@
-package me.randomhashtags.merchants.addon.obj;
+package me.randomhashtags.merchants.addon;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;

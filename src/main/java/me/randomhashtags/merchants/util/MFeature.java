@@ -1,6 +1,6 @@
 package me.randomhashtags.merchants.util;
 
-import me.randomhashtags.merchants.addon.obj.CustomPotion;
+import me.randomhashtags.merchants.addon.CustomPotion;
 import me.randomhashtags.merchants.universal.UMaterial;
 import me.randomhashtags.merchants.universal.UVersion;
 import org.bukkit.Bukkit;

@@ -3,8 +3,8 @@ package me.randomhashtags.merchants;
 import com.sun.istack.internal.NotNull;
 import me.randomhashtags.merchants.addon.Merchant;
 import me.randomhashtags.merchants.addon.MerchantItem;
-import me.randomhashtags.merchants.addon.file.FileMerchant;
-import me.randomhashtags.merchants.addon.obj.CustomPotion;
+import me.randomhashtags.merchants.addon.FileMerchant;
+import me.randomhashtags.merchants.addon.CustomPotion;
 import me.randomhashtags.merchants.supported.FactionsAPI;
 import me.randomhashtags.merchants.supported.economy.Vault;
 import me.randomhashtags.merchants.universal.UInventory;
@@ -31,6 +31,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.*;
@@ -176,7 +177,9 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
         if(data.getBoolean("save default shops")) {
             final String[] shops = new String[] {
                     "BASE", "BREWING", "COLOR", "DECOR",
-                    "ELIXIR", "ELIXIRS", "ENCHANTER", "FARMING", "FISH",
+                    "ELIXIR", "ELIXIRS",
+                    "ENCHANTER",
+                    "FARMING", "FISH",
                     "HOPPER", "MISC", "MOB", "ORE", "POTIONS",
                     "RAID"
             };
@@ -285,8 +288,8 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void inventoryClickEvent(InventoryClickEvent event) {
         final Player player = (Player) event.getWhoClicked();
-        if(player.getOpenInventory().getTopInventory().getHolder() == player) {
-            final Inventory top = player.getOpenInventory().getTopInventory();
+        final Inventory top = player.getOpenInventory().getTopInventory();
+        if(top.getHolder() == player && !top.getType().equals(InventoryType.PLAYER)) {
             final int r = event.getRawSlot();
             final ItemStack current = event.getCurrentItem();
             if(isPurchasing.containsKey(player) || isSelling.containsKey(player)) {
@@ -437,7 +440,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
             open(player, mi, OpenType.BUYING);
             isPurchasing.put(player, mi);
         } else {
-            sendStringListMessage(player, config.getStringList("messages.not buyable"), new HashMap<>());
+            sendStringListMessage(player, config.getStringList("messages.not buyable"), null);
         }
     }
     public void openSellView(Player player, MerchantItem mi) {
@@ -445,7 +448,7 @@ public class MerchantsAPI extends MFeature implements Listener, CommandExecutor 
             open(player, mi, OpenType.SELLING);
             isSelling.put(player, mi);
         } else {
-            sendStringListMessage(player, config.getStringList("messages.not sellable"), new HashMap<>());
+            sendStringListMessage(player, config.getStringList("messages.not sellable"), null);
         }
     }
     private void open(Player player, MerchantItem mi, OpenType type) {

@@ -1,6 +1,6 @@
 package me.randomhashtags.merchants.event;
 
-import me.randomhashtags.merchants.addon.obj.MerchantItemObj;
+import me.randomhashtags.merchants.addon.MerchantItemObj;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

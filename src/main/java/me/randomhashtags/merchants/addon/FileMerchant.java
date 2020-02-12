@@ -1,9 +1,5 @@
-package me.randomhashtags.merchants.addon.file;
+package me.randomhashtags.merchants.addon;
 
-import me.randomhashtags.merchants.addon.Merchant;
-import me.randomhashtags.merchants.addon.MerchantAddon;
-import me.randomhashtags.merchants.addon.MerchantItem;
-import me.randomhashtags.merchants.addon.obj.MerchantItemObj;
 import me.randomhashtags.merchants.universal.UMaterial;
 import me.randomhashtags.merchants.util.MerchantStorage;
 import me.randomhashtags.merchants.universal.UInventory;
@@ -62,6 +58,7 @@ public class FileMerchant extends MerchantAddon implements Merchant {
     public UInventory getInventory() {
         if(inv == null) {
             inv = new UInventory(null, yml.getInt("size"), colorize(yml.getString("title")));
+            getPages();
         }
         return inv;
     }
@@ -79,7 +76,7 @@ public class FileMerchant extends MerchantAddon implements Merchant {
                 final BigDecimal buyPrice = BigDecimal.valueOf(Double.parseDouble(prices[0])), sellPrice = BigDecimal.valueOf(Double.parseDouble(prices[1]));
                 final ItemStack item = getAPI().d(yml, p), customPurchase = getAPI().d(yml, p + "purchase");
                 final MerchantItem merchantItem = new MerchantItemObj(key, slot, opens, buyPrice, sellPrice, item, customPurchase, yml.getStringList(p + "commands"));
-                pages.get(page).put(page, merchantItem);
+                pages.get(page).put(slot, merchantItem);
 
                 final ItemMeta meta = item.getItemMeta();
                 inv.setItem(slot, item);

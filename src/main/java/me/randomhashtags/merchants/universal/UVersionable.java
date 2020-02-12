@@ -106,7 +106,7 @@ public interface UVersionable extends Versionable {
     }
 
     default int getRemainingInt(String string) {
-        string = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', string)).replaceAll("\\p{L}", "").replaceAll("\\s", "").replaceAll("\\p{P}", "").replaceAll("\\p{S}", "");
+        string = ChatColor.stripColor(colorize(string)).replaceAll("\\p{L}", "").replaceAll("\\s", "").replaceAll("\\p{P}", "").replaceAll("\\p{S}", "");
         return string.isEmpty() ? -1 : Integer.parseInt(string);
     }
 
@@ -117,7 +117,7 @@ public interface UVersionable extends Versionable {
                     s = s.replace(r, replacements.get(r));
                 }
             }
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', s));
+            sender.sendMessage(colorize(s));
         }
     }
 
@@ -167,7 +167,7 @@ public interface UVersionable extends Versionable {
         final List<String> i = new ArrayList<>();
         if(input != null) {
             for(String s : input) {
-                i.add(ChatColor.translateAlternateColorCodes('&', s));
+                i.add(colorize(s));
             }
         }
         return i;
